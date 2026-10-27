@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador NBA posesión por posesión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#e8ebf1;--sf:rgba(255,255,255,.72);--sf2:rgba(25,35,70,.09);--tx:#1b2133;--mt:#5b6479;--ln:rgba(25,35,70,.14);--ac:#c4550a;--ac2:#d1346c;--g:#0b8f5a;--r:#cc3a2f;--cl:rgba(120,78,34,.55)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;color:var(--tx);font:14px/1.4 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(14px,env(safe-area-inset-top)) 14px 48px;font-variant-numeric:tabular-nums;min-height:100vh;
+background:radial-gradient(900px 500px at 85% -10%,rgba(255,150,130,.30),transparent 60%),radial-gradient(800px 500px at -10% 10%,rgba(130,160,255,.30),transparent 60%),radial-gradient(700px 600px at 50% 110%,rgba(255,205,130,.28),transparent 60%),var(--bg);background-attachment:fixed}
+main{max-width:1240px;margin-inline:auto}
+.pick{max-width:560px}.top{display:grid;gap:14px}.top>div{min-width:0}
+@media(min-width:1100px){main{max-width:1560px}.top{grid-template-columns:minmax(300px,.85fr) minmax(0,2.5fr) minmax(300px,.85fr)!important}.rc{display:contents}.rc>.bx:first-child{grid-column:1;grid-row:1;margin:0}.lc{grid-column:2;grid-row:1}.rc>.bx:last-child{grid-column:3;grid-row:1;margin:0}.rc .bx table{font-size:11.5px}.rc .bx td:first-child{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rc .bx th,.rc .bx td{padding:5px 2px}}
+@media(min-width:960px){.top{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start}.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}.cols>.bx{margin-bottom:0}.rc .bx:last-child{margin-bottom:0}}
+h1{font:800 24px/1.05 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.02em;text-transform:uppercase;margin:4px 0 12px;background:linear-gradient(90deg,#1b2133,var(--ac) 60%,var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.card,.sc,.wp,.cap,.bx{background:var(--sf);border:1px solid var(--ln);border-radius:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.ctl{display:flex;gap:6px;align-items:center;margin-bottom:12px}
+.ctl>b{color:var(--mt)}
+select{flex:1;min-width:0;padding:10px;border:1px solid var(--ln);border-radius:12px;background:#fbfcfe;color:var(--tx);font:inherit}
+.sc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 8px;background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.55))}
+.tm{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.tm b{font:800 46px/1 "Barlow Condensed",sans-serif;margin-top:2px}
+.tm i{font-style:normal;font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.tm small{color:var(--mt);font-size:11px}
+.cl{text-align:center;font:800 22px/1 "Barlow Condensed",sans-serif;padding:0 6px;color:var(--ac)}
+.cl small{display:block;font:600 11px "Barlow",sans-serif;color:var(--mt);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
+.wp{margin:10px 0;padding:10px 12px}
+.wb{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--sf2)}.wb div{transition:width .4s}
+.wl{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:6px}.wl span:nth-child(2){color:var(--mt);font-weight:500}
+svg{display:block;width:100%}
+#court{border-radius:18px;border:1px solid var(--ln);background:linear-gradient(160deg,#ecd9b6,#dcc196 60%,#e6cfa8);box-shadow:0 10px 28px rgba(25,35,70,.18)}
+#court .ln{fill:none;stroke:var(--cl);stroke-width:.35}
+#cw{position:relative;container-type:inline-size;perspective:1400px;perspective-origin:50% 25%;aspect-ratio:94/50;transition:aspect-ratio .9s cubic-bezier(.4,.1,.2,1),margin .9s ease}
+#stg{position:absolute;left:0;right:0;top:50%;height:53.19cqw;margin-top:-26.6cqw;transform-style:preserve-3d;transform-origin:50% 50%;transition:transform .9s cubic-bezier(.4,.1,.2,1)}
+.sd,.hp,.sh,.gs{position:absolute;pointer-events:none;opacity:0;transition:opacity .6s}
+.sh{inset:0;transform:translateZ(.15cqw);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 45%,rgba(30,20,10,.16));transition:opacity .6s,border-radius .9s}
+.gs{inset:-2% -3%;background:radial-gradient(closest-side,rgba(20,24,45,.55),rgba(20,24,45,0));filter:blur(8px);transform:translateZ(-5.6cqw)}
+.sd{background:linear-gradient(#8a6034,#4d3319)}
+.sd.f{left:0;right:0;top:100%;height:3.4cqw;transform-origin:50% 0;transform:rotateX(-90deg)}
+.sd.s{top:0;bottom:0;width:3.4cqw;transform-origin:0 50%;transform:rotateY(90deg);background:linear-gradient(90deg,#6e4a28,#43301a)}
+.sd.s.l{left:0;transform:rotateY(-90deg) translateX(-100%);transform-origin:0 50%}.sd.s.r{left:100%}
+#cw.d3{aspect-ratio:94/34;margin:0 0 1cqw}
+.d3 #stg{transform:rotateX(55deg) scale(.86) translateY(-2%)}
+.d3 #court{border-radius:6px;box-shadow:none;border-color:rgba(70,45,20,.5)}
+.d3 .sd,.d3 .hp,.d3 .sh,.d3 .gs{opacity:1}.d3 .sh{border-radius:6px}
+
+#stg{--tl:55deg}
+.hoop{position:absolute;top:50%;width:0;height:0;transform-style:preserve-3d;pointer-events:none;opacity:0;transition:opacity .6s}
+.hoop.l{left:5.585cqw;--s:-1}.hoop.r{left:94.415cqw;--s:1}
+.hoop .bb{position:absolute;left:calc(var(--s)*1.33cqw);top:-3.2cqw;width:3.72cqw;height:6.4cqw;transform-origin:0 50%;transform:translateZ(9.6cqw) rotateY(-90deg);background:linear-gradient(135deg,rgba(255,255,255,.85),rgba(220,235,250,.55));border:.2cqw solid #5b6479;border-radius:.3cqw;box-shadow:0 0 1cqw rgba(255,255,255,.7)}
+.hoop .bb::after{content:"";position:absolute;left:32%;right:32%;top:38%;bottom:8%;border:.18cqw solid #e8590c}
+.hoop .rim{position:absolute;left:-1.2cqw;top:-1.2cqw;width:2.4cqw;height:2.4cqw;border:.38cqw solid #ff6a13;border-radius:50%;transform:translateZ(10.64cqw);box-shadow:0 0 1cqw rgba(255,106,19,.5)}
+.hoop .net{position:absolute;left:-1cqw;top:-1.9cqw;width:2cqw;height:1.9cqw;transform-origin:50% 100%;transform:translateZ(8.74cqw) rotateX(-55deg);background:repeating-linear-gradient(60deg,rgba(255,255,255,.75) 0 .12cqw,transparent .12cqw .5cqw),repeating-linear-gradient(-60deg,rgba(255,255,255,.75) 0 .12cqw,transparent .12cqw .5cqw);clip-path:polygon(0 0,100% 0,78% 100%,22% 100%)}
+.hoop .pole{position:absolute;left:calc(var(--s)*6.65cqw - .4cqw);top:-10.8cqw;width:.8cqw;height:10.8cqw;transform-origin:50% 100%;transform:rotateX(-55deg);background:linear-gradient(90deg,#4a5060,#8a90a0,#4a5060);border-radius:.3cqw}
+.hoop .arm{position:absolute;top:-.25cqw;height:.5cqw;width:5.3cqw;transform:translateZ(11.3cqw);background:#5a6070}
+.hoop.l .arm{left:-6.65cqw}.hoop.r .arm{left:1.33cqw}
+.p3l{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none;display:none}
+.pw{position:absolute;width:0;height:0;transform-style:preserve-3d;transition:left var(--mv,.65s) ease,top var(--mv,.65s) ease}
+.psh{position:absolute;left:-1.7cqw;top:-.8cqw;width:3.4cqw;height:1.6cqw;border-radius:50%;background:radial-gradient(closest-side,rgba(15,20,40,.55),rgba(15,20,40,0))}
+.pw.act .psh{background:radial-gradient(closest-side,rgba(15,20,40,.55) 55%,var(--c) 62%,transparent 70%)}
+.fig{position:absolute;left:-1.7cqw;top:-6.3cqw;width:3.4cqw;height:6.3cqw;transform-origin:50% 100%;transform:rotateX(-55deg)}
+.fig i{position:absolute;display:block}
+.fig .hd{left:.85cqw;top:0;width:1.7cqw;height:1.7cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f7d9bf,#b9825a 80%);box-shadow:0 .1cqw .3cqw rgba(0,0,0,.35)}
+.fig .bd{left:.4cqw;top:1.6cqw;width:2.6cqw;height:2.7cqw;border-radius:1.1cqw 1.1cqw .5cqw .5cqw;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#000),var(--c) 45%,color-mix(in srgb,var(--c) 65%,#000));border:.14cqw solid rgba(255,255,255,.85);text-align:center;box-shadow:0 .2cqw .5cqw rgba(0,0,0,.3)}
+.fig .bd b{color:#fff;font:800 1.15cqw/2.4cqw "Barlow Condensed",sans-serif;text-shadow:0 0 .3cqw rgba(0,0,0,.6);letter-spacing:.03em}
+.fig .lg{left:.8cqw;top:4.2cqw;width:1.8cqw;height:2.1cqw;background:linear-gradient(90deg,transparent 0 8%,#b9825a 8% 44%,transparent 44% 56%,#b9825a 56% 92%,transparent 92%);border-radius:.3cqw}
+.fig .lg::before{content:"";position:absolute;left:0;right:0;top:0;height:.9cqw;background:color-mix(in srgb,var(--c) 55%,#000);border-radius:.3cqw}
+.tgw{position:absolute;left:0;top:0;width:0;height:0;transform:rotateX(-55deg)}
+.ptag{position:absolute;bottom:6.9cqw;left:0;transform:translateX(-50%);display:none;white-space:nowrap;background:rgba(18,22,38,.9);color:#fff;border-left:.5cqw solid var(--c);padding:.35cqw .9cqw;border-radius:.4cqw;font:700 max(9px,1.3cqw)/1.15 "Barlow",sans-serif;box-shadow:0 .3cqw 1cqw rgba(0,0,0,.35)}
+.pw.act .ptag{display:block}
+.bw{position:absolute;width:0;height:0;transform-style:preserve-3d;left:50%;top:50%}
+.bsh{position:absolute;left:-.8cqw;top:-.4cqw;width:1.6cqw;height:.8cqw;border-radius:50%;background:radial-gradient(closest-side,rgba(10,15,30,.6),transparent)}
+.bsp{position:absolute;left:-.75cqw;top:-.75cqw;width:1.5cqw;height:1.5cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffb366,#e8590c 60%,#a83c06);border:.1cqw solid #5a2306;box-shadow:inset 0 0 0 .05cqw rgba(0,0,0,.4);transform:translateZ(.7cqw) rotateX(-55deg)}
+.bsp::before{content:"";position:absolute;left:50%;top:6%;bottom:6%;width:.1cqw;background:#3a1805;transform:translateX(-50%)}
+.bsp::after{content:"";position:absolute;top:50%;left:6%;right:6%;height:.1cqw;background:#3a1805;transform:translateY(-50%)}
+.bigw{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:italic 900 11cqw/1 "Barlow Condensed",sans-serif;letter-spacing:.04em;color:var(--c,#fff);opacity:0;pointer-events:none;text-shadow:0 .3cqw 1cqw rgba(0,0,0,.25);white-space:nowrap}
+.bigw.go{animation:bigw 1s ease-out}
+@keyframes bigw{0%{opacity:.0;transform:translate(-50%,-50%) scale(.8)}15%{opacity:.5}100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)}}
+.d3 .p3l{display:block}.d3 #dots,.d3 #ball{display:none}.d3 .hoop{opacity:1}
+#v3.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
+@media (prefers-reduced-motion:reduce){#stg,#cw{transition:none}}
+#court.real{background:#0d0d10}#court.real .ln,#court.real #cc{display:none}#court.real .dot circle{stroke-width:.45}
+.dot{transition:transform .65s ease}.dot circle{filter:drop-shadow(0 0 1.2px rgba(0,0,0,.6))}.bl{transition:transform .65s ease}
+.cap{display:flex;gap:10px;align-items:center;margin:10px 0;padding:10px 12px;min-height:44px}
+.cap em{width:6px;align-self:stretch;border-radius:4px;flex:none}
+.ctl button{padding:9px 12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:12px;font:600 13px "Barlow",sans-serif;cursor:pointer}
+.ctl button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
+.ctl input[type=range]{flex:1;min-width:0;accent-color:var(--ac)}
+@media(max-width:560px){#cw+.cap+.ctl{flex-wrap:wrap}#cw+.cap+.ctl input[type=range]{order:9;flex:1 1 100%}#cw+.cap+.ctl button{flex:1}}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:5px 3px;text-align:right}th:first-child,td:first-child{text-align:left}
+th{color:var(--mt);font-weight:500;border-bottom:1px solid var(--ln)}
+tr.on td:first-child{font-weight:700;color:var(--ac)}tr.on td:first-child::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:5px}
+.ob{width:18px;height:18px;accent-color:var(--r);cursor:pointer}.off td:not(:last-child){opacity:.4}.off td:first-child{text-decoration:line-through}
+.bx{padding:10px 12px;margin-bottom:12px}
+.bx h2,.card h2{font:700 16px "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;margin:0 0 6px;color:var(--ac)}
+.ft{font-size:12px;color:var(--mt)}
+.rw{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--ln)}
+.rw input{width:72px;padding:6px;border:1px solid var(--ln);border-radius:8px;background:#fbfcfe;color:var(--tx);font:inherit;margin-left:4px}
+.v{font-weight:700;text-align:right}.v.g{color:var(--g)}
+/* panel de estrellas */
+details.card{padding:10px 12px;margin-bottom:12px}
+details.card summary{cursor:pointer;font:700 16px "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--ac);list-style:none}
+details.card summary::after{content:"▾";float:right;color:var(--mt)}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:520px){.sg{grid-template-columns:1fr}}
+.stc{background:rgba(255,255,255,.6);border:1px solid var(--ln);border-radius:14px;padding:8px 10px}
+.sth{display:flex;align-items:center;gap:8px;margin-bottom:6px}.sth small{color:var(--mt);margin-left:auto}
+.sr{padding:6px 0;border-top:1px solid var(--ln)}
+.sn{display:block;font-weight:700;margin-bottom:4px}
+.sr .in{display:flex;gap:6px}
+.sr label{flex:1;font-size:10.5px;color:var(--mt);letter-spacing:.06em}
+.sr input{display:block;width:100%;margin-top:2px;padding:7px 6px;border:1px solid var(--ln);border-radius:9px;background:#fbfcfe;color:var(--tx);font:600 14px "Barlow",sans-serif}
+.sr input::placeholder{color:rgba(91,100,121,.55)}
+.mt{display:grid;grid-template-columns:64px repeat(3,minmax(0,1fr));gap:6px;align-items:center}
+.mt .h{font-size:10px;color:var(--mt);letter-spacing:.1em;text-align:center;font-weight:700}.mt .rl{font-size:10.5px;color:var(--mt);line-height:1.15}
+.mt input{width:100%;min-width:0;padding:6px 2px;text-align:center;border:1px solid var(--ln);border-radius:8px;background:#fbfcfe;color:var(--tx);font:600 13.5px "Barlow",sans-serif}
+.mt input.bl{border-color:rgba(196,85,10,.45)}
+.mdl{text-align:center;line-height:1.1}.mdl b{display:block;font:800 18px/1 "Barlow Condensed",sans-serif;color:var(--ac)}.mdl small{font-size:10px;color:var(--mt)}
+.adjn{color:var(--ac);font-weight:600;margin-top:4px}.adjn:empty{display:none}.hs .aj{color:var(--ac)}
+.hs{text-align:center;line-height:1.1;min-height:26px}.hs b{display:block;font:800 15px/1 "Barlow Condensed",sans-serif;color:var(--tx)}.hs small{font-size:10px;color:var(--mt)}
+.rs{text-align:center;font-size:11.5px;min-height:30px;line-height:1.15}.rs b,.rs small{display:block}.rs small{font-size:10px;color:var(--mt)}.rs b.g,.rs small.g{color:var(--g)}
+.srh{display:flex;gap:6px;margin-bottom:5px}
+.srh select.ps{flex:1;padding:7px 8px;font-weight:700;font-size:13px}
+.srh .x,.stc .add{border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:10px;cursor:pointer;font:600 13px "Barlow",sans-serif}
+.srh .x{width:34px;color:var(--r)}
+.stc .add{width:100%;padding:8px;margin-top:8px;color:var(--ac);border-style:dashed}
+.sheetbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sheetbar button{padding:9px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font:600 13px "Barlow",sans-serif;cursor:pointer}
+.sheetbar button.go{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
+.tg{width:100%}.tg td,.tg th{padding:6px 4px;text-align:left;vertical-align:top}.tg td:last-child,.tg th:last-child{text-align:right}
+.gt{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--ln);font:800 15px "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--tx)}
+.gt span:last-child{font:600 12px "Barlow",sans-serif;color:var(--mt);letter-spacing:0}
+.tg{font-size:12.5px}.tg th{font-weight:500;color:var(--mt);font-size:11px;border-bottom:0}.tg td{border-top:1px solid var(--ln)}.tg tr:first-child th{border-top:0}
+.tp td:nth-child(2){white-space:nowrap}.tg td.v{white-space:nowrap;line-height:1.25}.tg td.v b{display:block;font-size:14px}.vt{display:block;font-size:11px;font-weight:600}.stk{color:var(--tx);font-weight:700}.tg td.v:not(.g) .vt{color:var(--mt)}.tp td:nth-child(2){padding-right:8px}
+.pl{display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap}.mk2{color:var(--mt);font-size:12px}
+
+.tg .mk{color:var(--mt);font-size:11px;display:block}
+.sb{display:flex;gap:8px;margin-top:10px;align-items:center}
+.sb button{padding:9px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font:600 13px "Barlow",sans-serif;cursor:pointer}
+.sb button.go{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
+
+.hv{border:1px solid var(--ln);background:var(--sf);border-radius:9px;padding:4px 8px;cursor:pointer;font-size:13px}
+#pm{position:fixed;inset:0;z-index:50;background:rgba(20,24,45,.55);display:flex;align-items:flex-start;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 10px 12px;overflow:auto}
+#pm[hidden]{display:none}
+.pmb{background:#fbfcfe;border:1px solid var(--ln);border-radius:18px;max-width:640px;width:100%;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.pmh{display:flex;align-items:flex-start;gap:10px;justify-content:space-between}.pmh h3{margin:0;font:800 22px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase}
+.pmk{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0;font-size:12px;color:var(--mt)}.pmk b{display:block;color:var(--tx);font-size:16px}
+.pmt{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.pmt button{border:1px solid var(--ln);background:var(--sf);border-radius:999px;padding:5px 11px;font:600 12px "Barlow",sans-serif;cursor:pointer;color:var(--tx)}.pmt button.on{background:var(--tx);color:#fff}
+.pmt .g{color:var(--g)}.pmt .r{color:var(--r)}.pmt button.on .g,.pmt button.on .r{color:#fff}
+.pml{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--mt)}.pml input{width:80px;padding:6px;border:1px solid var(--ln);border-radius:9px;font:600 14px "Barlow",sans-serif}
+.pmg{display:flex;align-items:center;gap:10px;margin:10px 0 4px}.pmg i{font:800 34px/1 "Barlow Condensed",sans-serif;font-style:normal;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff}
+.gA,.gB{background:var(--g)}.gC{background:#c89a1a}.gD,.gF{background:var(--r)}
+.pmm{width:100%;border-collapse:collapse;font-size:12px}.pmm th,.pmm td{padding:4px 6px;text-align:left;border-top:1px solid var(--ln)}
+.pmx{border:0;background:none;font-size:20px;cursor:pointer;color:var(--mt)}
+</style><script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script></head><body><main>
+<h1 id="h1"></h1><div class="ctl pick"><select id="sa"></select><b>@</b><select id="sh"></select></div>
+<div class="ctl" style="flex-wrap:wrap;gap:8px"><label style="cursor:pointer;border:1px solid var(--ln);border-radius:8px;padding:7px 11px;background:var(--sf);color:var(--tx);font-weight:600;font-size:13px">Cargar datos reales<input id="dj" type="file" accept=".json,application/json" hidden></label><label style="cursor:pointer;border:1px solid var(--ln);border-radius:8px;padding:7px 11px;background:var(--sf);color:var(--tx);font-weight:600;font-size:13px">Cargar historial de partidos<input id="hj" type="file" accept=".json,application/json" hidden></label><button id="dx" type="button" style="font-size:12px">Volver a estimaciones</button><span class="ft" id="hm">Historial: sin cargar (nba_historial.py).</span><span class="ft" id="dm">Datos: estimaciones del modelo (sin cargar nba_datos.json).</span></div>
+<div class="bx" id="ctx"><h2>Contexto del partido</h2>
+<div class="rw"><span>Ventaja de local (% de efectividad)</span><input id="c1" type="number" step=".5" min="0"></div>
+<div class="rw"><span>Peso de los emparejamientos (%)</span><input id="c2" type="number" step="10" min="0" max="200"></div>
+<div class="rw"><span id="c3l">Descanso visitante</span><select id="c3" style="flex:0 0 auto"><option value="0">Back-to-back</option><option value="1">1 día</option><option value="2">2 días</option><option value="3">3 o más</option></select></div>
+<div class="rw"><span id="c4l">Descanso local</span><select id="c4" style="flex:0 0 auto"><option value="0">Back-to-back</option><option value="1">1 día</option><option value="2">2 días</option><option value="3">3 o más</option></select></div>
+<p class="ft">Local: el visitante tira un poco peor y el local un poco mejor (2.5% equivale a unos 2.5 a 3 puntos de margen). Descanso: back-to-back resta cerca de 2% de efectividad y 3 días o más suma cerca de 1%. Emparejamientos: cada atacante lo marca un defensor de tamaño parecido; los bigs protegen mejor el aro y, con datos reales, cada defensor suma o resta según cuánto dejó tirar a sus rivales. Todos son valores aproximados.</p></div>
+<div class="top"><div class="lc">
+<div class="sc"><div class="tm"><span id="ab"></span><b id="as">0</b><i id="an"></i><small id="ar"></small></div><div class="cl"><span id="ck">Q1 12:00</span><small id="st">Cargando…</small></div><div class="tm"><span id="hb"></span><b id="hs">0</b><i id="hn"></i><small id="hr"></small></div></div>
+<div class="wp"><div class="wl"><span id="wa"></span><span>Probabilidad de victoria</span><span id="wh"></span></div><div class="wb"><div id="wba"></div><div id="wbh"></div></div>
+<svg id="wg" viewBox="0 0 300 36" preserveAspectRatio="none" style="height:36px;margin-top:8px"><line x1="0" x2="300" y1="18" y2="18" stroke="rgba(25,35,70,.2)"/><polyline id="wpl" fill="none" stroke="#c4550a" stroke-width="1.6"/></svg></div>
+<div id="cw"><div id="stg"><svg id="court" viewBox="0 0 94 50"><image id="cimg" x="0" y="0" width="94" height="50" preserveAspectRatio="none" style="display:none"/><g class="ln"><rect x="0" y="0" width="94" height="50"/><line x1="47" x2="47" y1="0" y2="50"/><circle cx="47" cy="25" r="6"/>
+<rect x="0" y="17" width="19" height="16"/><rect x="75" y="17" width="19" height="16"/><circle cx="19" cy="25" r="6"/><circle cx="75" cy="25" r="6"/>
+<path d="M0 3H14A23.75 23.75 0 0 1 14 47H0"/><path d="M94 3H80A23.75 23.75 0 0 0 80 47H94"/><circle cx="5.25" cy="25" r="1.2"/><circle cx="88.75" cy="25" r="1.2"/></g>
+<svg id="cc" x="42" y="20" width="10" height="10" viewBox="0 0 100 100" opacity=".92"></svg>
+<g id="dots"></g><circle id="ball" class="bl" r="1.1" fill="#ff9a3c" stroke="#000" stroke-width=".2" cx="0" cy="0" style="transform:translate(47px,25px)"/></svg>
+<div class="gs"></div><div class="sh"></div><div class="sd f"></div><div class="sd s l"></div><div class="sd s r"></div><div class="hoop l"><i class="pole"></i><i class="arm"></i><i class="bb"></i><i class="net"></i><i class="rim"></i></div><div class="hoop r"><i class="pole"></i><i class="arm"></i><i class="bb"></i><i class="net"></i><i class="rim"></i></div><div class="p3l" id="p3l"></div><div class="bigw" id="bigw"></div></div></div>
+<div class="cap"><em id="ce"></em><span id="tx">Calculando 5,000 simulaciones…</span></div>
+<div class="ctl"><button id="pp">Pausa</button><button id="s1" class="on">1x</button><button id="s2">4x</button><button id="s3">12x</button><input id="sl" type="range" min="0" max="0" value="0"><button id="nw">Nuevo</button><button id="v3" title="Cambiar entre vista 2D y 3D">3D</button></div>
+</div><div class="rc">
+<div class="bx"><h2 id="bat"></h2><table id="ba"></table></div>
+<div class="bx"><h2 id="bht"></h2><table id="bh"></table></div>
+</div></div>
+<details class="card" open><summary>Jugadores · promedios, línea del modelo y línea de la casa</summary>
+<p class="ft" style="margin:6px 0 0">Los 6 jugadores que más minutos pueden jugar (3 por equipo; se reemplazan solos si marcás una baja). <b>Prom. 25-26</b>: promedio real de la temporada pasada (se completa con "Cargar datos reales"; podés corregirlo y calibra el modelo). <b>Modelo</b>: línea justa de las 5,000 simulaciones y el valor más frecuente. <b>Últ. 10</b>: promedio de sus últimos partidos (con "Cargar historial de partidos"), ajustado cuando marcás bajas (cómo rinde sin ese compañero) y según el descanso. <b>Línea casa</b>: escribí la de tu casa; la probabilidad mezcla el modelo con cuántas veces el jugador superó esa línea en sus últimos partidos.</p>
+<div class="sg" id="st3"></div>
+<div class="sb"><button class="go" id="ap">Aplicar y resimular</button><button id="rs">Restablecer</button><button id="cb">Limpiar bajas</button><span class="ft" id="sm"></span></div></details>
+<div class="cols">
+<div class="bx mk" id="mk"></div>
+<div class="bx" id="bkp"><h2>Bankroll y stake</h2>
+<div class="rw"><span>Bankroll</span><input id="bk1" type="number" min="0" step="10"></div>
+<div class="rw"><span>Fracción de Kelly</span><select id="bk2" style="flex:0 0 auto"><option value=".125">1/8 · conservador</option><option value=".25">1/4 · recomendado</option><option value=".5">1/2 · agresivo</option></select></div>
+<div class="rw"><span>Stake máximo por apuesta (% del bankroll)</span><input id="bk3" type="number" min="0.5" step="0.5"></div>
+<div class="rw"><span>Máximo total por partido (%)</span><input id="bk4" type="number" min="1" step="1"></div>
+<p class="ft">El stake va de 1 a 10 y equivale al porcentaje del bankroll: stake 1 = 1%, stake 5 = 5%, stake 10 = 10%. Sale del criterio de Kelly fraccionado. sube con la ventaja del modelo y con la probabilidad de acierto, y baja cuando la cuota es corta. Solo se asigna a los mercados marcados como Recomendado o Ventaja ligera. Si la suma de todos supera el máximo por partido, se reduce proporcionalmente.</p></div>
+<div class="bx" id="sheet"></div>
+</div>
+<p class="ft" id="ft"></p>
+</main><div id="pm" hidden><div class="pmb"></div></div>
+<script>
+const R=Math.random,cdf=x=>{const z=Math.abs(x)/Math.SQRT2,t=1/(1+.3275911*z),y=1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-z*z);return x>=0?.5*(1+y):.5*(1-y)};
+const pick=(a,w)=>{let s=0;w.forEach(x=>s+=x);let r=R()*s;for(let i=0;i<a.length;i++){r-=w[i];if(r<=0)return a[i]}return a[a.length-1]};
+// nombre, minutos, uso, %aro, %triple, FG aro, FG triple, FG media, asist, rebote, pérdida
+const P=(n,m,u,r,t,fr,f3,fm,a,rb,tv)=>({n,m,u,r,t,fr,f3,fm,a,rb,tv});
+const TEAMS={bos:{n:"Celtics",c:"#16934f",d:{rim:.93,th:1,tv:0},pl:[
+P("White",31,.19,.22,.55,.64,.38,.43,1.7,.6,.09),P("Walsh",29,.17,.25,.45,.62,.36,.42,1.5,.8,.09),P("George",30,.22,.22,.38,.60,.37,.45,1.2,.8,.10),P("Tatum",34,.28,.30,.40,.64,.36,.43,1.5,1.6,.10),P("M. Robinson",26,.10,.78,0,.68,.2,.40,.5,2.2,.12),
+P("Pritchard",26,.21,.22,.55,.62,.37,.43,1.6,.6,.10),P("Queta",20,.12,.75,0,.66,.2,.45,.8,2.0,.12),P("Hauser",18,.14,.20,.65,.58,.39,.42,.6,.7,.08),P("Scheierman",14,.13,.22,.55,.58,.36,.41,.8,.7,.09),P("González",10,.13,.35,.35,.58,.33,.40,.6,.9,.12),P("Conley",10,.10,.20,.45,.55,.34,.42,1.3,.5,.10),P("Garza",4,.12,.5,.2,.58,.3,.42,.5,1.0,.12)]},
+det:{n:"Pistons",c:"#e0453a",d:{rim:1,th:.94,tv:.03},pl:[
+P("Cunningham",35,.29,.32,.35,.62,.36,.43,2.4,.8,.14),P("D. Robinson",28,.14,.15,.70,.60,.39,.40,.6,.5,.09),P("Thompson",30,.17,.45,.05,.64,.30,.45,1.4,1.4,.12),P("Collins",26,.18,.40,.30,.65,.35,.45,.8,1.4,.09),P("Duren",30,.20,.85,0,.70,.2,.50,.9,2.4,.14),
+P("Reed",18,.13,.75,0,.64,.2,.50,.6,1.8,.12),P("Joe",22,.14,.12,.70,.55,.40,.40,.5,.5,.07),P("Holland",22,.16,.35,.35,.58,.34,.42,.8,.7,.11),P("Jenkins",18,.16,.25,.30,.58,.34,.42,1.5,.5,.13),P("Huerter",16,.14,.12,.65,.52,.38,.40,.8,.5,.08),P("Green",14,.17,.35,.35,.58,.33,.42,.7,.8,.12),P("Prince",8,.12,.20,.55,.58,.35,.41,.6,.7,.08)]},
+nyk:{n:"Knicks",c:"#f58426",d:{rim:.97,th:.97,tv:.01},pl:[
+P("Brunson",34,.30,.28,.32,.60,.37,.46,2.4,.6,.10),P("Hart",31,.12,.35,.30,.64,.34,.42,1.2,1.9,.10),P("Bridges",33,.18,.25,.40,.62,.37,.45,1.0,.6,.08),P("Anunoby",31,.19,.28,.40,.63,.37,.44,.8,.9,.08),P("Towns",30,.22,.28,.38,.66,.39,.48,1.0,2.2,.11),
+P("McBride",22,.16,.22,.52,.58,.39,.42,1.2,.5,.08),P("Clarkson",18,.22,.25,.35,.58,.34,.44,1.0,.5,.10),P("Shamet",14,.13,.18,.65,.56,.38,.40,.8,.5,.07),P("Alvarado",14,.13,.25,.45,.58,.34,.42,1.3,.6,.12),P("Dadiet",12,.12,.25,.50,.58,.35,.40,.6,.6,.08),P("Kolek",10,.12,.30,.35,.58,.33,.42,1.3,.5,.10),P("Diawara",8,.12,.45,.20,.60,.30,.42,.6,.9,.10)]},
+phi:{n:"76ers",c:"#2f6fe0",d:{rim:1,th:1,tv:0},pl:[
+P("Maxey",36,.28,.22,.45,.60,.37,.44,1.9,.6,.10),P("Edgecombe",32,.20,.30,.40,.60,.35,.42,1.2,1.3,.11),P("Brown",32,.26,.28,.35,.62,.35,.45,1.1,1.0,.10),P("James",32,.25,.35,.30,.65,.36,.46,2.2,1.4,.12),P("Embiid",28,.30,.30,.15,.62,.35,.47,1.4,2.2,.13),
+P("Simons",22,.22,.22,.55,.58,.38,.42,1.1,.5,.10),P("Oubre",20,.18,.32,.35,.58,.34,.42,.6,1.0,.09),P("Lowry",16,.12,.20,.55,.56,.37,.40,1.8,.7,.12),P("Grimes",20,.15,.25,.50,.58,.36,.42,.8,.8,.09),P("Barlow",14,.10,.70,0,.64,.2,.45,.5,1.9,.12),P("Bona",12,.08,.85,0,.66,.2,.45,.6,2.0,.12),P("Watford",12,.13,.40,.30,.60,.33,.42,1.0,1.0,.11)]},
+okc:{n:"Thunder",c:"#2aa3e0",d:{rim:.95,th:.96,tv:.035},pl:[
+P("Gilgeous-Alexander",33,.32,.30,.30,.64,.36,.48,1.8,.7,.08),P("J. Williams",31,.22,.30,.35,.62,.36,.44,1.3,.9,.09),P("Holmgren",29,.15,.30,.40,.66,.37,.45,.9,1.8,.09),P("Dort",28,.10,.25,.55,.60,.37,.40,.6,.8,.08),P("Hartenstein",26,.10,.65,0,.66,.2,.45,1.2,2.3,.13),
+P("Caruso",22,.12,.20,.60,.58,.39,.40,1.0,.8,.08),P("Wallace",24,.13,.25,.50,.58,.36,.41,1.0,.8,.09),P("Mitchell",22,.17,.35,.35,.60,.35,.44,1.3,.6,.10),P("Wiggins",20,.13,.30,.40,.60,.36,.42,.7,.7,.08),P("Joe",18,.12,.12,.75,.52,.40,.40,.5,.5,.07),P("Jaylin Williams",14,.09,.30,.45,.58,.34,.42,1.0,1.6,.12),P("Sorber",12,.10,.75,0,.64,.2,.45,.5,2.0,.13)]},
+sas:{n:"Spurs",c:"#8b93a7",d:{rim:.94,th:1,tv:.01},pl:[
+P("Fox",31,.22,.30,.38,.60,.36,.45,1.8,.6,.11),P("Castle",31,.20,.38,.27,.60,.33,.43,1.5,1.2,.12),P("Harper",28,.20,.35,.30,.60,.33,.43,1.4,.9,.12),P("Champagnie",26,.13,.15,.70,.55,.38,.40,.5,.7,.07),P("Wembanyama",31,.30,.33,.30,.64,.35,.48,1.2,2.6,.11),
+P("Vassell",22,.19,.15,.55,.56,.37,.42,.8,.6,.08),P("Kornet",20,.10,.65,0,.66,.2,.45,.7,1.8,.11),P("Bryant",18,.12,.20,.55,.58,.35,.41,.5,.8,.08),P("K. Johnson",18,.16,.30,.40,.58,.34,.42,.6,.9,.10),P("Barnes",16,.11,.20,.50,.56,.37,.40,.8,.8,.07),P("Sochan",14,.12,.40,.20,.58,.30,.42,1.0,1.1,.12),P("T. Jones",14,.10,.25,.35,.56,.33,.40,1.8,.5,.11)]}
+};
+// identidad visual (insignias originales, no son los logos oficiales) y récord 2025-26 de la tabla de la NBA
+const META={bos:["BOS","56-26","#16934f","#0b4a2c","shield"],det:["DET","60-22","#e0453a","#1d3a8a","circle"],nyk:["NYK","53-29","#f58426","#1f5fbf","hex"],phi:["PHI","45-37","#2f6fe0","#d6392e","diamond"],okc:["OKC","64-18","#2aa3e0","#ef6a2c","hex"],sas:["SAS","62-20","#8b93a7","#14161d","shield"]};
+for(const k in META){const m=META[k],t=TEAMS[k];t.key=k;t.k=m[0];t.rec=m[1];t.c=m[2];t.c2=m[3];t.sh=m[4]}
+
+// ===== Las otras 24 franquicias =====
+// Rosters de la temporada 2026-27 (depth charts de RealGM y Hoops Distillery, 20-21/10/2026). No incluye lesionados de larga duración.
+// El récord mostrado es el de 2025-26; el modelo solo lo usa como ajuste leve de fuerza.
+// Formato de jugador: "Apellido|minutos|uso|arquetipo|ajuste de tiro". Para editar un roster, cambiá estas líneas.
+const MF="rgba(255,255,255,.92)";
+// arquetipo: %aro, %triple, FG aro, FG triple, FG media, asist, rebote, pérdida
+const AR={PG:[.22,.40,.60,.365,.43,2.0,.5,.12],CG:[.28,.40,.60,.365,.45,1.3,.6,.10],SG:[.15,.62,.57,.38,.41,.8,.5,.08],W:[.30,.38,.62,.365,.44,1.0,.9,.09],WD:[.22,.52,.58,.37,.41,.7,.8,.08],F:[.38,.28,.63,.35,.44,1.3,1.5,.10],SF:[.28,.40,.64,.36,.45,.9,1.8,.10],B:[.80,0,.67,.2,.45,.7,2.2,.12],BP:[.40,.22,.66,.35,.48,1.8,2.3,.13]};
+const ICON={
+star:`<polygon points="50,60 54,70 65,70 56,76 60,87 50,80 40,87 44,76 35,70 46,70" fill="${MF}"/>`,
+flame:`<path d="M50 60 C58 68 62 74 58 82 C56 87 44 87 42 82 C39 75 46 72 46 66 C48 68 50 66 50 60Z" fill="${MF}"/>`,
+sun:`<circle cx="50" cy="74" r="5.5" fill="${MF}"/><circle cx="50" cy="74" r="10.5" fill="none" stroke="${MF}" stroke-width="3" stroke-dasharray="2 4.1"/>`,
+mountain:`<polygon points="28,88 43,66 51,78 58,70 72,88" fill="${MF}"/>`,
+wave:`<path d="M30 72 Q38 64 46 72 T62 72 T78 72 M30 82 Q38 74 46 82 T62 82 T78 82" stroke="${MF}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+crown:`<polygon points="32,86 34,66 43,76 50,62 57,76 66,66 68,86" fill="${MF}"/>`,
+horns:`<path d="M33 62 C33 76 41 82 50 82 C59 82 67 76 67 62" stroke="${MF}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+rocket:`<polygon points="50,58 58,74 58,86 42,86 42,74" fill="${MF}"/><polygon points="42,80 34,88 42,88 M58,80 66,88 58,88" fill="${MF}"/>`,
+orbit:`<ellipse cx="50" cy="75" rx="16" ry="6" fill="none" stroke="${MF}" stroke-width="3" transform="rotate(-20 50 75)"/><circle cx="50" cy="75" r="5" fill="${MF}"/>`,
+claws:`<path d="M37 62 L43 87 M50 60 L54 87 M63 62 L65 87" stroke="${MF}" stroke-width="4.5" stroke-linecap="round"/>`,
+columns:`<rect x="32" y="62" width="36" height="4" fill="${MF}"/><g fill="${MF}"><rect x="35" y="68" width="6" height="18"/><rect x="45" y="68" width="6" height="18"/><rect x="55" y="68" width="6" height="18"/></g>`,
+bridge:`<path d="M28 86 Q50 56 72 86" stroke="${MF}" stroke-width="4" fill="none"/><path d="M40 74 V86 M50 70 V86 M60 74 V86" stroke="${MF}" stroke-width="3"/>`,
+moon:`<path d="M58 61 A14 14 0 1 0 58 88 A10.5 12.5 0 1 1 58 61Z" fill="${MF}"/>`,
+paw:`<g fill="${MF}"><ellipse cx="50" cy="79" rx="8" ry="6.5"/><circle cx="40" cy="69" r="3.6"/><circle cx="50" cy="65" r="3.6"/><circle cx="60" cy="69" r="3.6"/></g>`,
+chevron:`<path d="M34 76 L50 62 L66 76 M34 87 L50 73 L66 87" stroke="${MF}" stroke-width="5" fill="none" stroke-linejoin="round"/>`,
+pine:`<polygon points="50,60 61,75 56,75 66,88 34,88 44,75 39,75" fill="${MF}"/>`,
+checks:`<g fill="${MF}"><rect x="34" y="62" width="8" height="8"/><rect x="50" y="62" width="8" height="8"/><rect x="42" y="70" width="8" height="8"/><rect x="58" y="70" width="8" height="8"/><rect x="34" y="78" width="8" height="8"/><rect x="50" y="78" width="8" height="8"/></g>`,
+sail:`<polygon points="48,60 48,84 32,84" fill="${MF}"/><polygon points="53,66 53,84 68,84" fill="${MF}"/>`,
+wing:`<path d="M30 84 L50 62 L70 84 L50 75Z" fill="${MF}"/>`,
+stinger:`<polygon points="50,60 61,76 50,89 39,76" fill="${MF}"/>`,
+note:`<circle cx="44" cy="82" r="5.5" fill="${MF}"/><path d="M49.5 82 V62 L63 67" stroke="${MF}" stroke-width="3.5" fill="none"/>`,
+antler:`<path d="M50 88 V66 M50 78 L40 66 M50 78 L60 66 M40 66 V60 M60 66 V60" stroke="${MF}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+bolt:`<path d="M55 60 L42 75 H50 L45 88 L60 71 H52 Z" fill="${MF}"/>`};
+const NMOT={};
+const NEW=[
+["atl","Hawks","46-36","#e03a3e","#f3c13a","shield","wing",["McCollum|30|.23|CG","Alexander-Walker|31|.19|CG","Daniels|31|.15|WD","J. Johnson|33|.26|F|.01","Okongwu|27|.15|B","Dort|22|.10|WD","Wiggins|20|.12|WD","Kispert|18|.12|SG|.02","Finney-Smith|18|.08|F","Newell|14|.11|F","Landale|12|.09|B","Flemings|12|.14|PG"]],
+["bkn","Nets","20-62","#8a8f98","#1a1a1a","hex","bridge",["Randle|31|.27|F","M. Porter Jr.|31|.24|W","Demin|29|.17|PG","M. Brown Jr.|26|.19|PG","Mann|22|.12|WD","Wolf|20|.14|SF","Sharpe|22|.13|B","Ellis|22|.11|WD","Clowney|20|.14|SF","Saraf|14|.12|PG","Wagner|14|.10|B","Traore|12|.12|PG"]],
+["cha","Hornets","44-38","#1d9db5","#6b3fa0","diamond","stinger",["B. Miller|32|.27|W","Knueppel|32|.19|SG|.02","White|28|.22|CG","Reid|26|.19|SF","Schroder|24|.15|PG","Allen|22|.15|SG|.02","O'Neale|22|.09|WD","Diabate|22|.11|B","G. Williams|14|.09|F","McNeeley|14|.12|SG","Kalkbrenner|14|.09|B","S. James|12|.09|WD"]],
+["chi","Bulls","31-51","#ce1141","#1a1a1a","circle","horns",["Powell|31|.25|CG|.01","Giddey|33|.21|PG","Buzelis|30|.21|W","Claxton|27|.13|B","Okoro|26|.10|WD","C. Wilson|24|.17|F","T. Jones|20|.13|PG","Hield|18|.14|SG|.02","P. Williams|20|.12|F","J. Smith|14|.11|B","Collins|14|.10|SF","Essengue|12|.12|F"]],
+["cle","Cavaliers","52-30","#a3124a","#fdbb30","shield","chevron",["Mitchell|34|.30|CG|.02","Harden|32|.24|PG","Mobley|32|.22|F","Allen|27|.16|B","Watson|26|.14|WD","Tyson|26|.14|WD","Merrill|20|.14|SG|.02","Porter|18|.13|PG","Proctor|14|.10|PG","Bryant|14|.10|B","Hezonja|14|.11|SF","M. Thomas|10|.12|SG"]],
+["dal","Mavericks","26-56","#2a6fd6","#9aa7b5","circle","star",["Flagg|34|.27|F|.01","Irving|22|.26|PG|.02","Christie|30|.14|WD","Washington|28|.17|F","Marshall|27|.15|W","Risacher|24|.15|WD","Sasser|22|.14|PG","Aldama|22|.11|SF","Gafford|22|.11|B","Martin|14|.08|WD","Cisse|10|.07|B","M. Johnson|10|.09|B"]],
+["den","Nuggets","54-28","#3b6cc4","#fec524","hex","mountain",["Jokic|35|.31|BP|.04","Murray|33|.26|CG","DeRozan|30|.24|W","Gordon|30|.14|F","Braun|30|.14|WD","C. Johnson|24|.16|W","T. Jones|20|.09|PG","Strawther|16|.12|SG","Bagley|16|.10|B","Nnaji|10|.08|B","S. Jones|12|.09|WD","Holmes|12|.10|F"]],
+["gsw","Warriors","37-45","#2456b8","#ffc72c","shield","bridge",["Curry|32|.30|PG|.03","Green|26|.10|F","Horford|22|.11|SF","Podziemski|28|.16|SG","Melton|26|.15|CG","Payton II|16|.07|WD","B. Williams|20|.13|CG","Santos|20|.11|F","Richard|20|.10|SG","Lendeborg|24|.15|F","Niang|14|.10|SG","Bassey|12|.07|B"]],
+["hou","Rockets","52-30","#d4264d","#c4ced4","diamond","rocket",["Durant|34|.29|W|.04","Sengun|32|.25|BP","A. Thompson|31|.20|W","VanVleet|30|.19|PG","J. Smith Jr.|29|.16|SF","Eason|22|.14|F","Sheppard|24|.15|SG","Smart|22|.10|WD","Bogdanovic|18|.15|SG","Adams|16|.08|B","Capela|14|.09|B","Tate|10|.06|WD"]],
+["ind","Pacers","19-63","#2a4b9b","#fdbb30","circle","checks",["Siakam|33|.24|F","Nembhard|32|.19|PG","Haliburton|28|.22|PG|.02","Zubac|28|.15|B","Nesmith|28|.14|WD","Oubre|26|.17|W","Toppin|20|.14|F","Sheppard|16|.10|SG","McConnell|18|.11|PG","Walker|14|.11|F","Huff|14|.09|SF","Nance|12|.07|B"]],
+["lac","Clippers","42-40","#d4203a","#1d428a","hex","sail",["Garland|32|.25|PG","Dunn|28|.10|WD","Strus|24|.13|SG","Lopez|26|.12|SF","Hachimura|28|.16|F","Dick|26|.17|SG","Jones Jr.|26|.11|WD","I. Jackson|20|.10|B","J. Miller|18|.10|WD","Sanders|20|.12|SG","Wagler|16|.14|SG","B. Miller|10|.07|B"]],
+["lal","Lakers","53-29","#7a3fc0","#fdb927","shield","crown",["Doncic|35|.35|PG|.03","Reaves|33|.23|CG","Kessler|27|.13|B","Z. Williams|25|.13|W","Vanderbilt|22|.07|F","Grimes|26|.17|CG","LaRavia|24|.11|WD","Sexton|22|.18|CG","Hardy|16|.14|CG","Thybulle|20|.09|WD","Mamukelashvili|22|.11|SF","Looney|12|.06|B"]],
+["mem","Grizzlies","25-57","#5d76a9","#12173f","circle","paw",["Jerome|31|.22|CG","Spencer|24|.13|SG|.02","Grant|30|.21|W","K. Murray|24|.12|F","Edey|27|.15|B","Pippen Jr.|22|.13|PG","Wells|27|.14|WD","Coward|26|.16|W","GG Jackson|26|.20|F","Stewart|22|.10|B","Boozer|24|.18|F","Clayton|20|.14|SG"]],
+["mia","Heat","43-39","#c8173f","#f9a01b","diamond","flame",["Antetokounmpo|34|.33|BP|.04","Adebayo|32|.21|BP","Wiggins|28|.17|W","D. Mitchell|28|.12|PG","Hardaway Jr.|26|.15|SG","Thompson|20|.13|SG|.01","Larsson|18|.09|WD","Fontecchio|14|.10|SG","Portis|20|.14|F","Jovic|18|.13|F","Richards|10|.07|B","D. Smith|14|.07|PG"]],
+["mil","Bucks","32-50","#1f8a45","#eee1c6","circle","antler",["Herro|33|.27|CG","Kuzma|28|.20|F","Turner|28|.15|SF","Rollins|32|.19|PG","Jaquez|30|.17|W","A. Green|22|.12|SG|.02","Trent Jr.|20|.13|SG","Ware|22|.12|B","LeVert|20|.16|W","Jakucionis|18|.14|PG","Dieng|14|.09|F","Sims|12|.06|B"]],
+["min","Timberwolves","49-33","#2b7bb9","#78be20","hex","moon",["Edwards|35|.31|W|.02","LaMelo Ball|32|.28|PG","McDaniels|30|.15|WD","Kuminga|28|.19|W","Gobert|29|.13|B","Dosunmu|24|.14|CG","J. Clark|16|.07|WD","Hyland|14|.13|PG","C. Williams|14|.10|W","Shannon Jr.|16|.14|W","Lyles|14|.09|SF","Beringer|10|.07|B"]],
+["nop","Pelicans","26-56","#2563a8","#b4975a","shield","wave",["Williamson|30|.29|F|.02","Murphy III|32|.23|W|.02","Murray|30|.19|PG","H. Jones|27|.11|WD","Queen|26|.17|BP","Poole|24|.20|CG","Mathurin|24|.20|W","Fears|24|.18|PG","Bey|22|.14|W","Missi|20|.10|B","Watford|10|.09|F","McGowens|10|.09|SG"]],
+["orl","Magic","45-37","#1b86d1","#c4ced4","circle","orbit",["Banchero|33|.28|F","F. Wagner|32|.25|W","Bane|31|.21|SG|.02","Suggs|29|.17|PG","Carter Jr.|26|.13|SF","Vucevic|20|.15|SF","Black|22|.13|PG","da Silva|20|.12|W","Bitadze|14|.08|B","Isaac|14|.07|F","Richardson|14|.12|PG","J. Carter|12|.07|PG"]],
+["phx","Suns","45-37","#e56020","#4b2fa0","hex","sun",["Booker|35|.32|CG","Green|31|.27|CG","Brooks|30|.19|WD|-.01","Bridges|29|.21|F","Ighodaro|24|.10|B","Kennard|20|.12|SG|.02","Gillespie|18|.11|PG","Dunn|18|.08|WD","Maluach|16|.10|B","Goodwin|12|.08|PG","Fleming|10|.09|SF","Peat|12|.12|F"]],
+["por","Trail Blazers","42-40","#e03a3e","#1a1a1a","diamond","pine",["Morant|31|.28|PG","Lillard|30|.25|PG|.02","Camara|29|.13|WD","Avdija|34|.25|F|.01","Clingan|28|.15|B","Henderson|24|.17|PG","Holiday|24|.12|PG","Krejci|14|.10|SG","R. Williams III|14|.07|B","Cissoko|12|.07|WD","Hansen|10|.09|B","Carlson|10|.07|B"]],
+["sac","Kings","22-60","#6a3ea0","#8a98a6","shield","stinger",["LaVine|32|.26|CG","Sabonis|31|.22|BP","K. Murray|31|.19|F","Hunter|30|.19|W","Acuff|28|.19|PG","Monk|24|.21|CG","Clifford|22|.12|WD","Achiuwa|16|.09|B","Raynaud|16|.11|B","Sharp|14|.12|SG","Plowden|10|.08|WD","I. Jones|10|.08|F"]],
+["tor","Raptors","46-36","#d4203a","#a1a1a4","hex","claws",["Barnes|34|.26|F","Leonard|30|.27|W|.02","Barrett|32|.21|W","Quickley|30|.21|PG","Poeltl|24|.12|B","Shead|18|.10|PG","Walter|16|.10|SG","Murray-Boyles|22|.12|F","Hepburn|12|.09|PG","Jackson-Davis|14|.09|B","K. Anderson|18|.08|F","Bradley|10|.07|PG"]],
+["uta","Jazz","22-60","#3a56b8","#f9a01b","circle","note",["Markkanen|32|.27|SF|.03","George|31|.22|CG","Peterson|30|.21|CG","Jackson Jr.|30|.22|SF","Nurkic|22|.13|BP","Bailey|26|.19|W","Collier|18|.11|PG","Sensabaugh|16|.15|W","Okogie|18|.07|WD","Green|16|.10|SG","Hayes|14|.08|B","Filipowski|16|.12|SF"]],
+["was","Wizards","17-65","#e0314b","#1f3a7a","shield","columns",["Young|31|.29|PG","Davis|26|.25|BP","Sarr|28|.18|SF","K. George|28|.17|W","Dybantsa|30|.22|W","T. Johnson|22|.20|CG","Coulibaly|24|.13|WD","Ayton|20|.15|B","Middleton|18|.14|W","Mann|16|.13|PG","Carrington|16|.12|PG","Riley|12|.10|W"]]];
+NEW.forEach(([k,n,rec,c,c2,sh,ic,pl])=>{const [w,l]=rec.split("-").map(Number),wp=w/(w+l);
+ const pls=pl.map(x=>{const [nm,m,u,ty,q]=x.split("|"),a=AR[ty],e=(+q||0)+(wp-.5)*.025,r3=v=>+(v+e).toFixed(3);return P(nm,+m,+u,a[0],a[1],r3(a[2]),r3(a[3]),r3(a[4]),a[5],a[6],a[7])});
+ TEAMS[k]={n,c,c2,k:k.toUpperCase(),rec,sh,key:k,d:{rim:+(1.03-.06*wp).toFixed(3),th:+(1.01-.03*wp).toFixed(3),tv:+(-.005+.02*wp).toFixed(3)},pl:pls};NMOT[k]=ICON[ic]});
+
+// Ajustes 2026-27 en los equipos originales (jugadores que cambiaron de equipo)
+const mk1=(spec,k)=>{const [nm,m,u,ty,q]=spec.split("|"),a=AR[ty],e=+q||0,r3=v=>+(v+e).toFixed(3);return P(nm,+m,+u,a[0],a[1],r3(a[2]),r3(a[3]),r3(a[4]),a[5],a[6],a[7])};
+const SWAP=(k,o,spec)=>{const t=TEAMS[k],i=t.pl.findIndex(p=>p.n===o);if(i<0)throw new Error("swap "+k+o);t.pl[i]=mk1(spec)};
+SWAP("phi","Oubre","Caldwell-Pope|20|.10|WD");SWAP("phi","Lowry","Philon|14|.12|PG");SWAP("phi","Grimes","Wade|16|.08|SF");SWAP("phi","Watford","Edwards|12|.11|W");
+SWAP("okc","Dort","McCain|18|.16|CG");SWAP("okc","Wiggins","K. Williams|12|.08|F");SWAP("okc","Joe","Mara|10|.08|B");
+TEAMS.okc.pl.find(p=>p.n==="Wallace").m=28;
+SWAP("sas","Sochan","T. Harris|16|.14|F");SWAP("sas","T. Jones","Reed|12|.08|B");
+const BASE={};for(const k in TEAMS)BASE[k]=TEAMS[k].pl.map(p=>({u:p.u,rb:p.rb,a:p.a}));
+const SH={shield:"M50 4 L90 15 V50 C90 74 72 90 50 97 C28 90 10 74 10 50 V15 Z",hex:"M50 3 L91 26 V74 L50 97 L9 74 V26 Z",circle:"M50 4a46 46 0 1 0 .01 0Z",diamond:"M50 2 L98 50 L50 98 L2 50 Z"};
+const MOTIF={
+bos:`<g fill="${MF}"><circle cx="43" cy="70" r="5.5"/><circle cx="57" cy="70" r="5.5"/><circle cx="50" cy="63.5" r="5.5"/><circle cx="50" cy="73" r="4.5"/></g><path d="M50 74 L54 86" stroke="${MF}" stroke-width="3" stroke-linecap="round"/>`,
+det:`<circle cx="50" cy="73" r="10" fill="none" stroke="${MF}" stroke-width="5" stroke-dasharray="4.2 3.2"/><circle cx="50" cy="73" r="6" fill="none" stroke="${MF}" stroke-width="2.5"/><circle cx="50" cy="73" r="2" fill="${MF}"/>`,
+nyk:`<g fill="${MF}"><rect x="27" y="76" width="7" height="12"/><rect x="36" y="68" width="8" height="20"/><rect x="46" y="60" width="8" height="28"/><rect x="56" y="70" width="8" height="18"/><rect x="66" y="77" width="7" height="11"/></g><path d="M50 55 V60" stroke="${MF}" stroke-width="2"/>`,
+phi:`<path d="M50 62 C42 62 40 70 40 77 L36 83 H64 L60 77 C60 70 58 62 50 62Z" fill="${MF}"/><circle cx="50" cy="87" r="3" fill="${MF}"/>`,
+okc:`<path d="M55 60 L42 75 H50 L45 88 L60 71 H52 Z" fill="${MF}"/>`,
+sas:`<polygon points="50,60 54,70 65,70 56,76 60,87 50,80 40,87 44,76 35,70 46,70" fill="${MF}"/>`};
+Object.assign(MOTIF,NMOT);
+let bid=0;
+function badgeIn(t){const id="bg"+(bid++),d=SH[t.sh];return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.c}"/><stop offset="1" stop-color="${t.c2}"/></linearGradient></defs><path d="${d}" fill="url(#${id})" stroke="rgba(255,255,255,.9)" stroke-width="4" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.6" transform="translate(50 50) scale(.8) translate(-50 -50)"/><text x="50" y="52" text-anchor="middle" font-size="27" font-weight="800" fill="#fff" stroke="rgba(0,0,0,.5)" stroke-width="3" paint-order="stroke" font-family="Barlow Condensed,Arial Narrow,sans-serif" letter-spacing="1">${t.k}</text>${MOTIF[t.key]||""}`}
+// Logos propios del usuario: poné los archivos en la carpeta "logos" junto a este HTML (bos.png, lal.svg, etc.).
+// Si el archivo no existe, se muestra la insignia genérica.
+const LEXT=["png","svg","webp","jpg"];
+function lgErr(img){const k=img.dataset.k,n=+img.dataset.n+1;if(n>=LEXT.length){img.remove();return}img.dataset.n=n;img.src=`logos/${k}.${LEXT[n]}`}
+function lgOk(img){img.style.display="block";img.previousElementSibling.style.display="none"}
+const badge=(t,s)=>`<span style="position:relative;display:block;width:${s}px;height:${s}px"><svg viewBox="0 0 100 100" width="${s}" height="${s}" style="width:${s}px;height:${s}px;filter:drop-shadow(0 3px 6px rgba(25,35,70,.3))">${badgeIn(t)}</svg><img data-k="${t.key}" data-n="0" src="logos/${t.key}.${LEXT[0]}" alt="" onload="lgOk(this)" onerror="lgErr(this)" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(25,35,70,.3))"></span>`;
+
+// Canchas reales del usuario: carpeta "courts" junto a este HTML (atl.png, bos.jpg, etc.). Se usa la cancha del equipo LOCAL.
+// Si no existe el archivo, se dibuja la cancha genérica.
+// CFIT = fracciones (0 a 1) de la imagen: f = superficie de juego (parqué), c = zona que se muestra (sin márgenes blancos).
+// Valores medidos con la imagen de ejemplo de Atlanta; si alguna cancha viene con otros márgenes, se puede ajustar por equipo: CFIT.bos={f:[...],c:[...]}.
+const CEXT=["png","jpg","jpeg","webp","svg"];
+const CFIT={def:{f:[.104,.173,.896,.831],c:[0,.0896,1,.9167]}};
+function courtImage(t){const c=$("court"),im=$("cimg");
+ const reset=()=>{c.classList.remove("real");c.setAttribute("viewBox","0 0 94 50");im.style.display="none"};reset();
+ const fit=CFIT[t.key]||CFIT.def,[fx0,fy0,fx1,fy1]=fit.f,[cx0,cy0,cx1,cy1]=fit.c,fw=fx1-fx0,fh=fy1-fy0;
+ const tryN=n=>{if(n>=CEXT.length)return;const src=`courts/${t.key}.${CEXT[n]}`,test=new Image();
+  test.onload=()=>{if(T[1]!==t)return;
+   im.setAttribute("href",src);im.setAttribute("x",(-fx0/fw*94).toFixed(3));im.setAttribute("y",(-fy0/fh*50).toFixed(3));im.setAttribute("width",(94/fw).toFixed(3));im.setAttribute("height",(50/fh).toFixed(3));im.style.display="";
+   c.setAttribute("viewBox",[((cx0-fx0)/fw*94),((cy0-fy0)/fh*50),((cx1-cx0)/fw*94),((cy1-cy0)/fh*50)].map(v=>v.toFixed(3)).join(" "));c.classList.add("real")};
+  test.onerror=()=>tryN(n+1);test.src=src};tryN(0)}
+function courtLogo(t){const el=$("cc");el.innerHTML=badgeIn(t);const tryN=n=>{if(n>=LEXT.length)return;const src=`logos/${t.key}.${LEXT[n]}`,im=new Image();im.onload=()=>{if(T[1]===t)el.innerHTML=`<image href="${src}" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid meet"/>`};im.onerror=()=>tryN(n+1);im.src=src};tryN(0)}
+let T=[TEAMS.bos,TEAMS.det];
+const K=["sec","pts","reb","ast","pf","fgm","fga"];
+function sim(log){
+ const S=T.map(t=>{const s={sc:0,on:t.pl.map((_,j)=>j).filter(j=>!t.pl[j].out).slice(0,5)};K.forEach(k=>s[k]=Array(t.pl.length).fill(0));return s});
+ const snap=()=>JSON.stringify(S.map(s=>K.map(k=>s[k])));
+ let t=0,q=1,qend=720,off=R()<.5?0:1,last=0,ev=[];
+ const fac=[0,1].map(i=>(i?1+CFG.hca/150:1-CFG.hca/150)*(1+(REST[CFG.rest[i]]||0)));
+ let MU=[{},{}];const pair=()=>{[0,1].forEach(o=>{const A=S[o].on.slice().sort((x,y)=>SZ(T[o].pl[y])-SZ(T[o].pl[x])),B=S[1-o].on.slice().sort((x,y)=>SZ(T[1-o].pl[y])-SZ(T[1-o].pl[x]));MU[o]={};A.forEach((x,k)=>{MU[o][x]=B[k]})})};pair();
+ const L=i=>{const f=Math.min(t,2880)/2880;return S[i].sec.map((_,j)=>j).filter(j=>S[i].pf[j]<6&&!T[i].pl[j].out).sort((a,b)=>(T[i].pl[b].mm*f-S[i].sec[b]/60)-(T[i].pl[a].mm*f-S[i].sec[a]/60)).slice(0,5)};
+ const rec=(o,text,res,z,sh)=>{if(log)ev.push({q,clk:qend-t,off:o,text,res,z,sh,sc:[S[0].sc,S[1].sc],on:[S[0].on.slice(),S[1].on.slice()],st:snap()})};
+ rec(off,"Salto inicial","start",null,null);
+ while(true){
+  if(t>=qend){if(q>=4&&S[0].sc!==S[1].sc)break;q++;qend+=q>4?300:720;off=1-off;last=-999}
+  if(t-last>=180){S.forEach((s,i)=>s.on=L(i));pair();last=t}
+  let oreb=false,first=true,keep=true;
+  while(keep){keep=false;
+   const O=S[off],D=S[1-off],TO=T[off],TD=T[1-off],o0=off;
+   const dur=Math.min(qend-t,first?6+R()*17:3+R()*5);first=false;
+   O.on.concat(D.on).forEach(()=>0);S.forEach(s=>s.on.forEach(j=>s.sec[j]+=dur));t+=dur;
+   const sh=pick(O.on,O.on.map(j=>TO.pl[j].u)),p=TO.pl[sh],nm=p.n;
+   if(R()<p.tv+TD.d.tv){const st=R()<.55,d=MU[off][sh]!==undefined&&R()<.7?MU[off][sh]:pick(D.on,[1,1,1,1,1]);
+    rec(o0,st?`Robo de ${TD.pl[d].n}, pérdida de ${nm}`:`Pérdida de ${nm}`,"tov",null,sh);off=1-off;continue}
+   const x=R(),z=x<p.r?"r":x<p.r+p.t?"t":"m",fp={r:.15,m:.07,t:.035}[z];
+   let miss=false;
+   if(R()<fp){const d=MU[off][sh]!==undefined&&R()<.7?MU[off][sh]:pick(D.on,[1,1,1,1,1]);D.pf[d]++;const n=z==="t"?3:2;let h=0;for(let i=0;i<n;i++)if(R()<.78)h++;
+    O.pts[sh]+=h;O.sc+=h;rec(o0,`Falta de ${TD.pl[d].n} sobre ${nm}: ${h}/${n} libres`,"ft",z,sh);
+    if(h<n&&R()<.22)miss=true;else off=1-off;
+   }else{
+    O.fga[sh]++;const dd=MU[off][sh],dp=dd!==undefined?TD.pl[dd]:null,m=(1.07*p[z==="r"?"fr":z==="t"?"f3":"fm"]*(z==="r"?TD.d.rim:z==="t"?TD.d.th:1)*(TO.adj||1)+mEff(dp,z))*fac[off];
+    const tp=z==="t"?"triple":z==="r"?(p.r>.6&&R()<.4?"clavada":"bandeja"):"media distancia";
+    if(R()<m){const pts=z==="t"?3:2;O.pts[sh]+=pts;O.fgm[sh]++;O.sc+=pts;let a="";
+     if(R()<{r:.62,m:.45,t:.85}[z]){const ids=O.on.filter(j=>j!==sh),as=pick(ids,ids.map(j=>TO.pl[j].a));O.ast[as]++;a=`, asistencia de ${TO.pl[as].n}`}
+     rec(o0,`${nm} anota ${tp}${dp?" sobre "+dp.n:""}${a}`,"make",z,sh);off=1-off;
+    }else{miss=true;rec(o0,`${nm} falla ${tp}${dp?" ante "+dp.n:""}`,"miss",z,sh)}
+   }
+   if(miss){const ob=R()<(z==="r"?.32:.26);
+    if(ob){const r=pick(O.on,O.on.map(j=>TO.pl[j].rb));O.reb[r]++;rec(o0,`Rebote ofensivo de ${TO.pl[r].n}`,"reb",null,r);keep=true}
+    else{const r=pick(D.on,D.on.map(j=>TD.pl[j].rb));D.reb[r]++;rec(1-o0,`Rebote de ${TD.pl[r].n}`,"reb",null,r);off=1-o0}}
+  }
+ }
+ return{sc:[S[0].sc,S[1].sc],ev,pts:[S[0].pts,S[1].pts],reb:[S[0].reb,S[1].reb],ast:[S[0].ast,S[1].ast]};
+}
+let mu=0,sd=12,wH=.5,tot=0,G=null,pr=[],idx=0,tmr=null,spd=1;
+const $=id=>document.getElementById(id),f=n=>n.toString().padStart(2,"0");
+const clk=e=>`${e.q>4?"OT"+(e.q-4):"Q"+e.q} ${Math.floor(e.clk/60)}:${f(Math.round(e.clk%60))}`;
+function prob(e){const rem=(e.q<=4?(4-e.q)*720+e.clk:e.clk)/2880,m=e.sc[1]-e.sc[0];if(rem<=0)return m>0?1:m<0?0:.5;return cdf((m+mu*rem)/(sd*Math.sqrt(rem)))}
+const SP=[[80,25],[82,8],[82,42],[70,15],[70,35]];
+const dots=$("dots");let dg=[];
+for(let i=0;i<10;i++){const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.className.baseVal="dot";g.style.transform="translate(47px,25px)";
+ g.innerHTML=`<circle r="2.3" fill="${T[i<5?0:1].c}" stroke="#fff" stroke-width=".3"/><text text-anchor="middle" y=".8" font-size="2.1" fill="#fff" font-weight="700"></text>`;dots.appendChild(g);dg.push(g)}
+
+// ---- jugadores, pelota y tiros en 3D ----
+const P3=$("p3l"),U=x=>x/94*100+"%",V=y=>y/50*100+"%",pl3=[];
+for(let i=0;i<10;i++){const w=document.createElement("div");w.className="pw";w.style.left=U(47);w.style.top=V(25);w.innerHTML='<i class="psh"></i><div class="fig"><i class="lg"></i><i class="bd"><b></b></i><i class="hd"></i></div><div class="tgw"><span class="ptag"></span></div>';P3.appendChild(w);pl3.push(w)}
+const bw=document.createElement("div");bw.className="bw";bw.innerHTML='<i class="bsh"></i><i class="bsp"></i>';P3.appendChild(bw);
+const bsp=bw.querySelector(".bsp"),bz=z=>`translateZ(${z}cqw) rotateX(-55deg)`,RZ=10.64,HZ=4.4;
+let bpos={x:47,y:25,z:.7},banim=[];
+function bset(p){bw.style.left=U(p.x);bw.style.top=V(p.y);bsp.style.transform=bz(p.z);bpos={x:p.x,y:p.y,z:p.z}}
+// segmento de trayectoria: de a a b con altura extra h, ocupando offsets o0..o1; ez(t) curva opcional
+function seg(out,a,b,h,n,o0,o1,ez){for(let i=out.length?1:0;i<=n;i++){const t=i/n,u=ez?ez(t):t;out.push({x:a.x+(b.x-a.x)*u,y:a.y+(b.y-a.y)*u,z:a.z+(b.z-a.z)*u+4*h*t*(1-t),o:o0+(o1-o0)*t})}}
+function fly(fr,total){banim.forEach(a=>{try{a.cancel()}catch(e){}});banim=[];const last=fr[fr.length-1];bset(last);if(total<30||!bw.animate)return;
+ banim=[bw.animate(fr.map(f=>({left:U(f.x),top:V(f.y),offset:f.o})),{duration:total,easing:"linear"}),bsp.animate(fr.map(f=>({transform:bz(f.z),offset:f.o})),{duration:total,easing:"linear"})]}
+const initials=n=>n.replace(/^[A-Z]\. /,"").slice(0,2);
+function scene3(e,pos,oi,di,right){
+ const iv=900/spd,tot=Math.min(850,iv*.88),mv=Math.min(.65,iv*.45/1000);P3.style.setProperty("--mv",mv+"s");
+ const X=x=>right?x:94-x,hoop={x:X(88.75),y:25},toward=right?-1:1;
+ let sp=null;
+ for(let t=0;t<2;t++)e.on[t].forEach((pl,k)=>{const w=pl3[t*5+k];let [x,y]=pos[t][k]||[47,25];
+  const act=t===oi&&pl===e.sh;if(act&&e.res==="ft"){x=X(75);y=25}
+  w.style.left=U(x);w.style.top=V(y);w.style.setProperty("--c",T[t].c);w.querySelector("b").textContent=initials(T[t].pl[pl].n);
+  w.classList.toggle("act",act||(e.res==="reb"&&t===e.off&&pl===e.sh));
+  if(act||(e.res==="reb"&&t===e.off&&pl===e.sh)){sp={x,y};const nm=T[t].pl[pl].n.replace(/^[A-Z]\. /,""),r=e.res,m=e.text.match(/(\d)\/(\d) libres/);
+   const lab=r==="make"?(e.z==="t"?"TRIPLE":/clavada/.test(e.text)?"CLAVADA":e.z==="r"?"BANDEJA":"MEDIA DISTANCIA"):r==="miss"?"FALLA":r==="reb"?"REBOTE":r==="tov"?(/^Robo/.test(e.text)?"PÉRDIDA (ROBO)":"PÉRDIDA"):m?`LIBRES ${m[1]}/${m[2]}`:"";
+   w.querySelector(".ptag").textContent=lab?nm+" · "+lab:nm}});
+ const from={x:bpos.x,y:bpos.y,z:bpos.z},hand=sp?{x:sp.x+(right?1:-1)*.9,y:sp.y,z:HZ}:{x:47,y:25,z:HZ},fr=[];
+ const dist=sp?Math.hypot(sp.x-hoop.x,sp.y-hoop.y):10,rim={x:hoop.x,y:hoop.y,z:RZ},up=2.5+dist*.075;
+ const r=e.res,m2=e.text.match(/(\d)\/(\d) libres/),made=r==="make"||(r==="ft"&&m2&&+m2[1]>0);
+ if(r==="make"||r==="miss"||r==="ft"){
+  seg(fr,from,hand,.8,4,0,.3);seg(fr,hand,{x:rim.x,y:rim.y,z:RZ+.2},up,12,.3,.78);
+  if(made)seg(fr,{x:rim.x,y:rim.y,z:RZ+.2},{x:rim.x,y:rim.y,z:.7},0,6,.78,1,t=>t*t);
+  else{const L={x:hoop.x+toward*(4+R()*5),y:25+(R()-.5)*12,z:.7};seg(fr,{x:rim.x+toward*.6,y:rim.y,z:RZ},L,2.8,8,.78,1)}
+ }else if(r==="reb"){seg(fr,from,hand,1.2,10,0,1)}
+ else if(r==="tov"){seg(fr,from,hand,.8,4,0,.4);seg(fr,hand,{x:Math.max(3,Math.min(91,hand.x+(R()-.5)*14)),y:Math.max(3,Math.min(47,hand.y+(R()-.5)*14)),z:.7},1.8,8,.4,1)}
+ else if(r==="start"){seg(fr,{x:47,y:25,z:.7},{x:47,y:25,z:9},0,6,0,.5);seg(fr,{x:47,y:25,z:9},{x:47+(R()-.5)*3,y:25,z:HZ},0,6,.5,1,t=>t*t)}
+ else seg(fr,from,hand,1,8,0,1);
+ fly(fr,tot);
+ if(spd<4){const bg=$("bigw");const w={make:"ANOTA "+(e.z==="t"?"+3":"+2"),miss:"FALLA",tov:/^Robo/.test(e.text)?"ROBO":"PÉRDIDA",reb:"REBOTE",ft:m2?"LIBRES":"",start:"SALTO"}[r];
+  if(w){bg.textContent=w;bg.style.setProperty("--c",T[e.off||0].c);bg.classList.remove("go");void bg.offsetWidth;bg.classList.add("go")}}}
+function tbl(i,e){const s=JSON.parse(e.st)[i],o=e.on[i];
+ return"<tr><th>Jugador</th><th>Min</th><th>Pts</th><th>Reb</th><th>Ast</th><th>Pf</th><th>Tiros</th><th>Baja</th></tr>"+T[i].pl.map((p,j)=>`<tr class="${o.includes(j)?"on":""}${p.out?" off":""}"><td>${p.n}</td><td>${Math.round(s[0][j]/60)}</td><td>${s[1][j]}</td><td>${s[2][j]}</td><td>${s[3][j]}</td><td>${s[4][j]}</td><td>${s[5][j]}-${s[6][j]}</td><td><input type="checkbox" class="ob" data-i="${i}" data-j="${j}" ${p.out?"checked":""} aria-label="Marcar baja"></td></tr>`).join("")}
+function show(i){idx=i;const e=G.ev[i];$("sl").value=i;
+ $("as").textContent=e.sc[0];$("hs").textContent=e.sc[1];$("ck").textContent=clk(e);$("st").textContent=e.res==="start"?"Inicio":"Posesión: "+T[e.off].n;
+ $("tx").textContent=e.text;$("ce").style.background=T[e.off].c;
+ const pH=pr[i];$("wba").style.width=(1-pH)*100+"%";$("wbh").style.width=pH*100+"%";$("wba").style.background=T[0].c;$("wbh").style.background=T[1].c;
+ $("wa").textContent=T[0].n+" "+Math.round((1-pH)*100)+"%";$("wh").textContent=Math.round(pH*100)+"% "+T[1].n;
+ $("wpl").setAttribute("points",pr.slice(0,i+1).map((p,k)=>(k/(pr.length-1||1)*300).toFixed(1)+","+((1-p)*34+1).toFixed(1)).join(" "));
+ const right=(e.q<=2)===(e.off===0),dir=right?1:-1,X=x=>right?x:94-x;
+ const oi=e.off,di=1-oi;let pos=[[],[]];
+ e.on[oi].forEach((pl,k)=>{let [x,y]=SP[k];x+=(R()-.5)*3;y+=(R()-.5)*3;if(pl===e.sh&&e.z){const z=e.z;[x,y]=z==="r"?[85.5,25+(R()-.5)*8]:z==="m"?[76,25+(R()-.5)*22]:(R()<.35?[84,R()<.5?4:46]:[69+R()*3,25+(R()-.5)*30])}pos[oi][k]=[X(x),y]});
+ e.on[di].forEach((pl,k)=>{const [x,y]=pos[oi][k];pos[di][k]=[x+dir*2.6,y+(R()-.5)*2]});
+ for(let t=0;t<2;t++)e.on[t].forEach((pl,k)=>{const g=dg[t*5+k],[x,y]=pos[t][k]||[47,25];g.style.transform=`translate(${x}px,${y}px)`;g.querySelector("text").textContent=T[t].pl[pl].n.replace(/^[A-Z]\. /,"").slice(0,2)});
+ const sk=e.sh!==null&&e.on[oi].indexOf(e.sh);const bp=sk>=0&&e.sh!==null?pos[oi][sk]:[47,25];$("ball").style.transform=`translate(${bp[0]+1.6}px,${bp[1]-1.6}px)`;
+ scene3(e,pos,oi,di,right);
+ $("bat").textContent=T[0].n+" "+e.sc[0];$("bht").textContent=T[1].n+" "+e.sc[1];$("ba").innerHTML=tbl(0,e);$("bh").innerHTML=tbl(1,e)}
+function play(){clearInterval(tmr);if($("pp").textContent==="Pausa")tmr=setInterval(()=>{if(idx>=G.ev.length-1){clearInterval(tmr);$("pp").textContent="Reiniciar";return}show(idx+1)},900/spd)}
+function newGame(){G=sim(true);pr=G.ev.map(prob);$("sl").max=G.ev.length-1;$("pp").textContent="Pausa";show(0);play()}
+$("pp").onclick=()=>{const b=$("pp");if(b.textContent==="Pausa"){b.textContent="Seguir";clearInterval(tmr)}else{if(b.textContent==="Reiniciar")show(0);b.textContent="Pausa";play()}};
+[["s1",1],["s2",4],["s3",12]].forEach(([id,v])=>$(id).onclick=()=>{spd=v;["s1","s2","s3"].forEach(x=>$(x).classList.toggle("on",x===id));play()});
+$("sl").oninput=e=>show(+e.target.value);$("nw").onclick=newGame;
+function set3d(on){$("cw").classList.toggle("d3",on);$("v3").classList.toggle("on",on);$("v3").textContent=on?"2D":"3D";try{localStorage.setItem("nba3d",on?"1":"0")}catch(e){}}
+$("v3").onclick=()=>set3d(!$("cw").classList.contains("d3"));try{if(localStorage.getItem("nba3d")!=="0")set3d(true)}catch(e){set3d(true)}
+let rid=0,n,w,sm,sq,tt,MG,TT,PA,PR,PS,CK;
+function start(){const id=++rid;n=w=sm=sq=tt=0;MG=new Float32Array(5000);TT=new Float32Array(5000);
+PA=[0,1].map(i=>T[i].pl.map(()=>new Uint8Array(5000)));PR=[0,1].map(i=>T[i].pl.map(()=>new Uint8Array(5000)));PS=[0,1].map(i=>T[i].pl.map(()=>new Uint8Array(5000)));
+(function run(){if(id!==rid)return;for(let k=0;k<250;k++){const r=sim(false),m=r.sc[1]-r.sc[0];MG[n]=m;TT[n]=r.sc[0]+r.sc[1];[0,1].forEach(i=>r.pts[i].forEach((x,j)=>{PA[i][j][n]=x;PR[i][j][n]=r.reb[i][j];PS[i][j][n]=r.ast[i][j]}));n++;if(m>0)w++;sm+=m;sq+=m*m;tt+=r.sc[0]+r.sc[1]}
+ $("tx").textContent=`Simulando ${n.toLocaleString("en-US")} de 5,000…`;
+ if(n<5000)return setTimeout(run,0);
+ mu=sm/n;sd=Math.sqrt(sq/n-mu*mu);wH=w/n;
+ $("ft").textContent=`Partido simulado, no es una predicción. En 5,000 simulaciones: ${T[1].n} gana ${(wH*100).toFixed(1)}%, margen promedio ${mu.toFixed(1)}, total promedio ${(tt/n).toFixed(1)}. Las insignias son diseños propios, no los logos oficiales. Los récords son de la temporada 2025-26.`;
+ newGame();markets();phold()})()}
+const LINES={"phi-nyk":{sp:-4.5,tt:231.5,mh:1.54,ma:2.54}},DL={sp:-1.5,tt:224.5,mh:1.83,ma:2.00};
+const imp=o=>1/o,cnt=(a,fn)=>{let c=0;for(let i=0;i<a.length;i++)if(fn(a[i]))c++;return c/a.length};
+const vd=(p,be)=>{const e=p-be;return e>=.04?["Recomendado","g"]:e>=.02?["Ventaja ligera","g"]:["Sin valor",""]};
+let TOP=[];const LB=["PTS","REB","AST"],NM=["puntos","rebotes","asistencias"],SS=()=>[PA,PR,PS],AV=(q,x)=>SS()[q][x.i][x.j].reduce((a,v)=>a+v,0)/5000;
+function markets(){const L=LINES[CK]||DL;TOP=[];
+ [0,1].forEach(i=>T[i].stars.forEach(j=>{if(!T[i].pl[j].out)TOP.push({i,j})}));
+ const I=(id,v,s)=>`<input id="${id}" type="number" step="${s||.5}" value="${v}">`;
+ $("mk").innerHTML=`<div id="fqw" hidden style="display:none"><h2>Resultados más frecuentes · 5,000 simulaciones</h2><div id="fq"></div></div><h2 style="margin-top:12px">Mercados y recomendaciones</h2><p class="ft">${LINES[CK]?"Líneas de referencia del 20/10, verifícalas.":"Líneas de ejemplo: escribe las reales de tu casa de apuestas."}</p>
+ <div class="rw"><span>Spread ${T[1].n}${I("k1",L.sp)}</span><span>Total${I("k2",L.tt)}</span></div>
+ <div class="rw"><span>Cuota ${T[0].n}${I("k3",L.ma.toFixed(2),.01)}</span><span>${T[1].n}${I("k4",L.mh.toFixed(2),.01)}</span></div>
+ <div id="mr"></div><p class="ft">Umbral de equilibrio: cuota 1.91 (52.4%). Con datos de ejemplo, esto no es consejo de apuestas.</p>`;
+ $("mk").querySelectorAll("input").forEach(e=>e.oninput=calc);freq();calc()}
+let ROWS=[],INC=false;
+function calc(){const v=id=>parseFloat($(id).value),sp=v("k1"),tt=v("k2"),mh=v("k4"),ma=v("k3");ROWS=[];
+ const row=(l,p,be,mk,sel,line,odds,ti,ex)=>{const [t,c]=vd(p,be);ROWS.push({mk,sel,line,p,odds:odds||1.91,ref:!odds,t,c,ti,...ex});return `<div class="rw"><span>${l}</span><span class="v ${c}">${Math.round(p*100)}% · ${t}</span></div>`};
+ const cv=cnt(MG,m=>m+sp>0),ov=cnt(TT,x=>x>tt),eh=wH-imp(mh),ea=1-wH-imp(ma);
+ let h=`<h2 style="margin-top:10px">Modelo</h2>`;
+ h+=eh>=ea?row(`Gana ${T[1].n} (cuota ${mh})`,wH,imp(mh),"Moneyline",T[1].n,"",mh,1):row(`Gana ${T[0].n} (cuota ${ma})`,1-wH,imp(ma),"Moneyline",T[0].n,"",ma,0);
+ h+=cv>=.5?row(`${T[1].n} ${sp>0?"+":""}${sp}`,cv,.524,"Spread",`${T[1].n} ${sp>0?"+":""}${sp}`,sp,null,1):row(`${T[0].n} ${-sp>0?"+":""}${-sp}`,1-cv,.524,"Spread",`${T[0].n} ${-sp>0?"+":""}${-sp}`,-sp,null,0);
+ const th=teamTot(tt);let ov2=ov;if(th){const w=Math.min(.35,th.neff/(th.neff+14));ov2=(1-w)*ov+w*th.po}ov2=.5+(ov2-.5)*SHR;
+ h+=ov2>=.5?row(`Más de ${tt}`,ov2,.524,"Over/Under",`Más de ${tt}`,tt):row(`Menos de ${tt}`,1-ov2,.524,"Over/Under",`Menos de ${tt}`,tt);
+ h+=`<p class="ft" style="margin:4px 0 0">${th?`Totales recientes (puntos de ambos equipos por partido): ${T[0].n} ${th.a.toFixed(0)} · ${T[1].n} ${th.b.toFixed(0)} · ${th.ov} de ${th.n} partidos pasaron de ${tt}. ${th.sh&&th.sh.notes.length?"Ajustes: "+th.sh.notes.join(" · ")+" (total "+sg(th.sh.d)+"). ":""}Para "${ov2>=.5?"más":"menos"}": modelo ${Math.round((ov2>=.5?ov:1-ov)*100)}%, historial ${Math.round((ov2>=.5?th.po:1-th.po)*100)}%.`:"Sin historial de equipos: el total usa solo el modelo (cargá nba_historial.json)."}</p>`;
+ $("mr").innerHTML=h;
+ propRows(row);
+ renderSheet()}
+// ---- bankroll y stake (Kelly fraccionado) ----
+let BKV={bk:1000,fr:.25,cap:10,tot:25};try{Object.assign(BKV,JSON.parse(localStorage.getItem("nbaBank2")||"{}"))}catch(e){}
+const kelly0=r=>{if(r.c!=="g")return 0;const b=r.odds-1,f=(r.p*r.odds-1)/b;return f>0?Math.min(f*BKV.fr,BKV.cap/100):0};
+const SCL=()=>{const t=ROWS.reduce((a,r)=>a+kelly0(r),0),m=BKV.tot/100;return t>m?m/t:1};
+const kelly=r=>kelly0(r)*SCL();
+const stk10=r=>{const k=kelly(r);return k>0?Math.max(1,Math.min(10,Math.round(k*100))):0};
+const stkT=r=>{const u=stk10(r);return u?`<span class="vt stk">Stake ${u}</span>`:""};
+const riskTxt=d=>{const t=d.reduce((a,r)=>a+kelly(r),0);return t>0?`<p class="ft"><b>Total en riesgo: ${Math.round(BKV.bk*t)} (${(t*100).toFixed(1)}% del bankroll)</b>. Los props del mismo partido están correlacionados, por eso el total está limitado.</p>`:""};
+$("bk1").value=BKV.bk;$("bk2").value=String(BKV.fr);$("bk3").value=BKV.cap;$("bk4").value=BKV.tot;
+$("st3").addEventListener("input",e=>{if(e.target.classList.contains("bl")&&$("k1"))calc()});
+["bk1","bk2","bk3","bk4"].forEach(id=>$(id).oninput=()=>{const n=x=>{const v=parseFloat($(x).value);return isNaN(v)||v<0?0:v};BKV={bk:n("bk1"),fr:n("bk2")||.25,cap:n("bk3"),tot:n("bk4")};try{localStorage.setItem("nbaBank2",JSON.stringify(BKV))}catch(e){}if(ROWS.length)renderSheet()});
+$("bk2").onchange=$("bk2").oninput;
+// ---- resumen exportable ----
+const HD=["FECHA","PARTIDO","EQUIPO / JUGADOR","MERCADO","APUESTA","CUOTA","STAKE","RESULTADO","GANANCIA"];
+const GRP=[["Partido",["Moneyline","Spread","Over/Under"]],["Puntos",["Prop puntos"]],["Rebotes",["Prop rebotes"]],["Asistencias",["Prop asistencias"]]];
+const VR=()=>{const f=ROWS.filter(r=>INC||r.c==="g"),o=[];GRP.forEach(([n,ms])=>{let a=f.filter(r=>ms.includes(r.mk));if(n!=="Partido")a=a.sort((x,y)=>y.p-x.p);o.push(...a)});return o};
+// Nombre completo de cada jugador para la planilla (equipo -> nombre que muestra el simulador -> nombre completo).
+// Si cambiás un roster más arriba, agregá acá al jugador nuevo; si falta, se exporta con el nombre corto.
+const FULLN={
+bos:{"White":"Derrick White","Walsh":"Jordan Walsh","George":"Paul George","Tatum":"Jayson Tatum","M. Robinson":"Mitchell Robinson","Pritchard":"Payton Pritchard","Queta":"Neemias Queta","Hauser":"Sam Hauser","Scheierman":"Baylor Scheierman","González":"Hugo González","Conley":"Mike Conley","Garza":"Luka Garza"},
+det:{"Cunningham":"Cade Cunningham","D. Robinson":"Duncan Robinson","Thompson":"Ausar Thompson","Collins":"John Collins","Duren":"Jalen Duren","Reed":"Paul Reed","Joe":"Isaiah Joe","Holland":"Ron Holland","Jenkins":"Daniss Jenkins","Huerter":"Kevin Huerter","Green":"Javonte Green","Prince":"Taurean Prince"},
+nyk:{"Brunson":"Jalen Brunson","Hart":"Josh Hart","Bridges":"Mikal Bridges","Anunoby":"OG Anunoby","Towns":"Karl-Anthony Towns","McBride":"Miles McBride","Clarkson":"Jordan Clarkson","Shamet":"Landry Shamet","Alvarado":"Jose Alvarado","Dadiet":"Pacome Dadiet","Kolek":"Tyler Kolek","Diawara":"Mohamed Diawara"},
+phi:{"Maxey":"Tyrese Maxey","Edgecombe":"VJ Edgecombe","Brown":"Jaylen Brown","James":"LeBron James","Embiid":"Joel Embiid","Simons":"Anfernee Simons","Caldwell-Pope":"Kentavious Caldwell-Pope","Philon":"LaBaron Philon","Wade":"Dean Wade","Barlow":"Dominick Barlow","Bona":"Adem Bona","Edwards":"Justin Edwards"},
+okc:{"Gilgeous-Alexander":"Shai Gilgeous-Alexander","J. Williams":"Jalen Williams","Holmgren":"Chet Holmgren","McCain":"Jared McCain","Hartenstein":"Isaiah Hartenstein","Caruso":"Alex Caruso","Wallace":"Cason Wallace","Mitchell":"Ajay Mitchell","K. Williams":"Kenrich Williams","Mara":"Aday Mara","Jaylin Williams":"Jaylin Williams","Sorber":"Thomas Sorber"},
+sas:{"Fox":"De'Aaron Fox","Castle":"Stephon Castle","Harper":"Dylan Harper","Champagnie":"Julian Champagnie","Wembanyama":"Victor Wembanyama","Vassell":"Devin Vassell","Kornet":"Luke Kornet","Bryant":"Carter Bryant","K. Johnson":"Keldon Johnson","Barnes":"Harrison Barnes","T. Harris":"Tobias Harris","Reed":"Tarris Reed Jr."},
+atl:{"McCollum":"CJ McCollum","Alexander-Walker":"Nickeil Alexander-Walker","Daniels":"Dyson Daniels","J. Johnson":"Jalen Johnson","Okongwu":"Onyeka Okongwu","Dort":"Luguentz Dort","Wiggins":"Aaron Wiggins","Kispert":"Corey Kispert","Finney-Smith":"Dorian Finney-Smith","Newell":"Asa Newell","Landale":"Jock Landale","Flemings":"Kingston Flemings"},
+bkn:{"Randle":"Julius Randle","M. Porter Jr.":"Michael Porter Jr.","Demin":"Egor Demin","M. Brown Jr.":"Mikel Brown Jr.","Mann":"Terance Mann","Wolf":"Danny Wolf","Sharpe":"Day'Ron Sharpe","Ellis":"Keon Ellis","Clowney":"Noah Clowney","Saraf":"Ben Saraf","Wagner":"Moritz Wagner","Traore":"Nolan Traore"},
+cha:{"B. Miller":"Brandon Miller","Knueppel":"Kon Knueppel","White":"Coby White","Reid":"Naz Reid","Schroder":"Dennis Schroder","Allen":"Grayson Allen","O'Neale":"Royce O'Neale","Diabate":"Moussa Diabate","G. Williams":"Grant Williams","McNeeley":"Liam McNeeley","Kalkbrenner":"Ryan Kalkbrenner","S. James":"Sion James"},
+chi:{"Powell":"Norman Powell","Giddey":"Josh Giddey","Buzelis":"Matas Buzelis","Claxton":"Nic Claxton","Okoro":"Isaac Okoro","C. Wilson":"Caleb Wilson","T. Jones":"Tre Jones","Hield":"Buddy Hield","P. Williams":"Patrick Williams","J. Smith":"Jalen Smith","Collins":"Zach Collins","Essengue":"Noa Essengue"},
+cle:{"Mitchell":"Donovan Mitchell","Harden":"James Harden","Mobley":"Evan Mobley","Allen":"Jarrett Allen","Watson":"Peyton Watson","Tyson":"Jaylon Tyson","Merrill":"Sam Merrill","Porter":"Craig Porter Jr.","Proctor":"Tyrese Proctor","Bryant":"Thomas Bryant","Hezonja":"Mario Hezonja","M. Thomas":"Meleek Thomas"},
+dal:{"Flagg":"Cooper Flagg","Irving":"Kyrie Irving","Christie":"Max Christie","Washington":"P.J. Washington","Marshall":"Naji Marshall","Risacher":"Zaccharie Risacher","Sasser":"Marcus Sasser","Aldama":"Santi Aldama","Gafford":"Daniel Gafford","Martin":"Caleb Martin","Cisse":"Moussa Cisse","M. Johnson":"Morez Johnson Jr."},
+den:{"Jokic":"Nikola Jokic","Murray":"Jamal Murray","DeRozan":"DeMar DeRozan","Gordon":"Aaron Gordon","Braun":"Christian Braun","C. Johnson":"Cameron Johnson","T. Jones":"Tyus Jones","Strawther":"Julian Strawther","Bagley":"Marvin Bagley III","Nnaji":"Zeke Nnaji","S. Jones":"Spencer Jones","Holmes":"DaRon Holmes II"},
+gsw:{"Curry":"Stephen Curry","Green":"Draymond Green","Horford":"Al Horford","Podziemski":"Brandin Podziemski","Melton":"De'Anthony Melton","Payton II":"Gary Payton II","B. Williams":"Brandon Williams","Santos":"Gui Santos","Richard":"Will Richard","Lendeborg":"Yaxel Lendeborg","Niang":"Georges Niang","Bassey":"Charles Bassey"},
+hou:{"Durant":"Kevin Durant","Sengun":"Alperen Sengun","A. Thompson":"Amen Thompson","VanVleet":"Fred VanVleet","J. Smith Jr.":"Jabari Smith Jr.","Eason":"Tari Eason","Sheppard":"Reed Sheppard","Smart":"Marcus Smart","Bogdanovic":"Bogdan Bogdanovic","Adams":"Steven Adams","Capela":"Clint Capela","Tate":"Jae'Sean Tate"},
+ind:{"Siakam":"Pascal Siakam","Nembhard":"Andrew Nembhard","Haliburton":"Tyrese Haliburton","Zubac":"Ivica Zubac","Nesmith":"Aaron Nesmith","Oubre":"Kelly Oubre Jr.","Toppin":"Obi Toppin","Sheppard":"Ben Sheppard","McConnell":"T.J. McConnell","Walker":"Jarace Walker","Huff":"Jay Huff","Nance":"Larry Nance Jr."},
+lac:{"Garland":"Darius Garland","Dunn":"Kris Dunn","Strus":"Max Strus","Lopez":"Brook Lopez","Hachimura":"Rui Hachimura","Dick":"Gradey Dick","Jones Jr.":"Derrick Jones Jr.","I. Jackson":"Isaiah Jackson","J. Miller":"Jordan Miller","Sanders":"Kobe Sanders","Wagler":"Keaton Wagler","B. Miller":"Baba Miller"},
+lal:{"Doncic":"Luka Doncic","Reaves":"Austin Reaves","Kessler":"Walker Kessler","Z. Williams":"Ziaire Williams","Vanderbilt":"Jarred Vanderbilt","Grimes":"Quentin Grimes","LaRavia":"Jake LaRavia","Sexton":"Collin Sexton","Hardy":"Jaden Hardy","Thybulle":"Matisse Thybulle","Mamukelashvili":"Sandro Mamukelashvili","Looney":"Kevon Looney"},
+mem:{"Jerome":"Ty Jerome","Spencer":"Cam Spencer","Grant":"Jerami Grant","K. Murray":"Kris Murray","Edey":"Zach Edey","Pippen Jr.":"Scotty Pippen Jr.","Wells":"Jaylen Wells","Coward":"Cedric Coward","GG Jackson":"GG Jackson","Stewart":"Isaiah Stewart","Boozer":"Cameron Boozer","Clayton":"Walter Clayton Jr."},
+mia:{"Antetokounmpo":"Giannis Antetokounmpo","Adebayo":"Bam Adebayo","Wiggins":"Andrew Wiggins","D. Mitchell":"Davion Mitchell","Hardaway Jr.":"Tim Hardaway Jr.","Thompson":"Klay Thompson","Larsson":"Pelle Larsson","Fontecchio":"Simone Fontecchio","Portis":"Bobby Portis","Jovic":"Nikola Jovic","Richards":"Nick Richards","D. Smith":"Dru Smith"},
+mil:{"Herro":"Tyler Herro","Kuzma":"Kyle Kuzma","Turner":"Myles Turner","Rollins":"Ryan Rollins","Jaquez":"Jaime Jaquez Jr.","A. Green":"AJ Green","Trent Jr.":"Gary Trent Jr.","Ware":"Kel'el Ware","LeVert":"Caris LeVert","Jakucionis":"Kasparas Jakucionis","Dieng":"Ousmane Dieng","Sims":"Jericho Sims"},
+min:{"Edwards":"Anthony Edwards","LaMelo Ball":"LaMelo Ball","McDaniels":"Jaden McDaniels","Kuminga":"Jonathan Kuminga","Gobert":"Rudy Gobert","Dosunmu":"Ayo Dosunmu","J. Clark":"Jaylen Clark","Hyland":"Bones Hyland","C. Williams":"Cody Williams","Shannon Jr.":"Terrence Shannon Jr.","Lyles":"Trey Lyles","Beringer":"Joan Beringer"},
+nop:{"Williamson":"Zion Williamson","Murphy III":"Trey Murphy III","Murray":"Dejounte Murray","H. Jones":"Herb Jones","Queen":"Derik Queen","Poole":"Jordan Poole","Mathurin":"Bennedict Mathurin","Fears":"Jeremiah Fears","Bey":"Saddiq Bey","Missi":"Yves Missi","Watford":"Trendon Watford","McGowens":"Bryce McGowens"},
+orl:{"Banchero":"Paolo Banchero","F. Wagner":"Franz Wagner","Bane":"Desmond Bane","Suggs":"Jalen Suggs","Carter Jr.":"Wendell Carter Jr.","Vucevic":"Nikola Vucevic","Black":"Anthony Black","da Silva":"Tristan da Silva","Bitadze":"Goga Bitadze","Isaac":"Jonathan Isaac","Richardson":"Jase Richardson","J. Carter":"Jevon Carter"},
+phx:{"Booker":"Devin Booker","Green":"Jalen Green","Brooks":"Dillon Brooks","Bridges":"Miles Bridges","Ighodaro":"Oso Ighodaro","Kennard":"Luke Kennard","Gillespie":"Collin Gillespie","Dunn":"Ryan Dunn","Maluach":"Khaman Maluach","Goodwin":"Jordan Goodwin","Fleming":"Rasheer Fleming","Peat":"Koa Peat"},
+por:{"Morant":"Ja Morant","Lillard":"Damian Lillard","Camara":"Toumani Camara","Avdija":"Deni Avdija","Clingan":"Donovan Clingan","Henderson":"Scoot Henderson","Holiday":"Jrue Holiday","Krejci":"Vit Krejci","R. Williams III":"Robert Williams III","Cissoko":"Sidy Cissoko","Hansen":"Yang Hansen","Carlson":"Branden Carlson"},
+sac:{"LaVine":"Zach LaVine","Sabonis":"Domantas Sabonis","K. Murray":"Keegan Murray","Hunter":"De'Andre Hunter","Acuff":"Darius Acuff Jr.","Monk":"Malik Monk","Clifford":"Nique Clifford","Achiuwa":"Precious Achiuwa","Raynaud":"Maxime Raynaud","Sharp":"Emanuel Sharp","Plowden":"Daeqwon Plowden","I. Jones":"Isaac Jones"},
+tor:{"Barnes":"Scottie Barnes","Leonard":"Kawhi Leonard","Barrett":"RJ Barrett","Quickley":"Immanuel Quickley","Poeltl":"Jakob Poeltl","Shead":"Jamal Shead","Walter":"Ja'Kobe Walter","Murray-Boyles":"Collin Murray-Boyles","Hepburn":"Chucky Hepburn","Jackson-Davis":"Trayce Jackson-Davis","K. Anderson":"Kyle Anderson","Bradley":"Jaden Bradley"},
+uta:{"Markkanen":"Lauri Markkanen","George":"Keyonte George","Peterson":"Darryn Peterson","Jackson Jr.":"Jaren Jackson Jr.","Nurkic":"Jusuf Nurkic","Bailey":"Ace Bailey","Collier":"Isaiah Collier","Sensabaugh":"Brice Sensabaugh","Okogie":"Josh Okogie","Green":"Josh Green","Hayes":"Jaxson Hayes","Filipowski":"Kyle Filipowski"},
+was:{"Young":"Trae Young","Davis":"Anthony Davis","Sarr":"Alex Sarr","K. George":"Kyshawn George","Dybantsa":"AJ Dybantsa","T. Johnson":"Tre Johnson","Coulibaly":"Bilal Coulibaly","Ayton":"Deandre Ayton","Middleton":"Khris Middleton","Mann":"Tre Mann","Carrington":"Bub Carrington","Riley":"Will Riley"}
+};
+const FN=(t,n)=>(FULLN[t&&t.key]||{})[n]||n;
+function sheetData(){const d=new Date(),p=n=>String(n).padStart(2,"0"),f=`${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`,g=`${T[0].n} @ ${T[1].n}`;
+ const MKT={"Moneyline":"MoneyLine","Spread":"Handicap","Over/Under":"Over/Under","Prop puntos":"Puntos","Prop rebotes":"Rebotes","Prop asistencias":"Asistencias"},ST={"Prop puntos":"Puntos","Prop rebotes":"Rebotes","Prop asistencias":"Asistencias","Over/Under":"Puntos"};
+ return VR().map(r=>{const pr=r.mk.startsWith("Prop"),ou=r.mk==="Over/Under",who=pr?FN(T[r.ti],r.pl):ou?g:T[r.ti].n;
+  const ap=pr||ou?((ou?r.sel:r.side).startsWith("Menos")?"-":"")+r.line+" "+ST[r.mk]:r.sel;
+  return[f,g,who,MKT[r.mk],ap,r.ref?"":+r.odds.toFixed(2),stk10(r),"",""]})}
+function bajasTxt(){const a=[];T.forEach((t,i)=>t.pl.forEach((p,j)=>{if(p.out)a.push(`${p.n} (${t.k})`)}));return a.length?a.join(", "):"Ninguna"}
+function renderSheet(){const d=VR();
+ const grp=(n,ms)=>{const a=d.filter(r=>ms.includes(r.mk));if(!a.length)return "";
+  if(n==="Partido")return `<div class="gt"><span>Partido</span><span>${a.length}</span></div><table class="tg"><tr><th>Mercado</th><th>Selección</th><th>Prob. · Veredicto</th></tr>${a.map(r=>`<tr><td class="mk2">${r.mk}</td><td><span class="pl">${r.ti!=null?badge(T[r.ti],20):""}<span>${r.sel}</span></span></td><td class="v ${r.c}"><b>${Math.round(r.p*100)}%</b><span class="vt">${r.t}</span>${stkT(r)}</td></tr>`).join("")}</table>`;
+  return `<div class="gt"><span>Props de ${n.toLowerCase()}</span><span>${a.length}</span></div><table class="tg tp"><tr><th>Jugador</th><th>Línea</th><th>Prob. · Veredicto</th></tr>${a.map(r=>`<tr><td><span class="pl">${badge(T[r.ti],20)}<span>${r.pl}</span><span class="mk" style="display:inline">${T[r.ti].k}</span></span></td><td>${r.side}</td><td class="v ${r.c}"><b>${Math.round(r.p*100)}%</b><span class="vt">${r.t}</span>${stkT(r)}</td></tr>`).join("")}</table>`};
+ $("sheet").innerHTML=`<h2>Resumen del partido · para exportar</h2><p class="ft">Bajas consideradas: ${bajasTxt()}</p><label class="ft"><input type="checkbox" id="inc" ${INC?"checked":""}> Incluir también los "Sin valor"</label>`+
+ (d.length?GRP.map(([n,ms])=>grp(n,ms)).join(""):`<p class="ft">Ningún mercado tiene ventaja con las líneas actuales.</p>`)+
+ riskTxt(d)+`<div class="sheetbar"><button class="go" id="bx">Descargar Excel</button><button id="bc">Copiar filas</button><span class="ft" id="bm"></span></div><p class="ft">El stake se calcula con cuota 1.91 de referencia en handicap, O/U y props; en el Excel esas cuotas quedan vacías para que las cargues tú (el moneyline sale con la que escribiste). "Copiar filas" no incluye encabezado: pegalas debajo de las del partido anterior.</p>`;
+ $("inc").onchange=e=>{INC=e.target.checked;renderSheet()};$("bx").onclick=exportXlsx;$("bc").onclick=copyRows}
+const stamp=()=>CK+"_"+new Date().toISOString().slice(0,10);
+async function exportXlsx(){const rows=sheetData();if(!rows.length){$("bm").textContent="No hay filas para exportar.";return}
+ if(window.ExcelJS){try{
+  const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet("Apuestas");
+  ws.columns=[12,20,24,16,26,9,9,14,12].map(w=>({width:w}));
+  ws.addRow(HD);const th={style:"thin",color:{argb:"FFBFBFBF"}},bd={top:th,left:th,bottom:th,right:th};
+  ws.getRow(1).eachCell(c=>{c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFFFF2CC"}};c.font={bold:true};c.alignment={horizontal:"center"};c.border=bd});
+  const d=new Date(),dt=new Date(d.getFullYear(),d.getMonth(),d.getDate()),N=Math.max(300,rows.length+50);
+  for(let n=2;n<=N;n++){const r=rows[n-2],row=ws.getRow(n);
+   if(r){row.getCell(1).value=dt;[2,3,4,5].forEach(k=>row.getCell(k).value=r[k-1]);row.getCell(6).value=r[5]===""?null:r[5];row.getCell(7).value=r[6]}
+   row.getCell(9).value={formula:`IF(H${n}="","",IF(ISNUMBER(SEARCH("Fallo",H${n})),-G${n},IF(F${n}="","",G${n}*(F${n}-1))))`};
+   row.getCell(4).dataValidation={type:"list",allowBlank:true,formulae:['"MoneyLine,Handicap,Over/Under,Puntos,Rebotes,Asistencias"']};
+   row.getCell(8).dataValidation={type:"list",allowBlank:true,formulae:['"✅ Acierto,❌ Fallo"']};
+   row.getCell(1).numFmt="dd/mm/yyyy";row.getCell(6).numFmt="0.00";row.getCell(7).numFmt="0";row.getCell(9).numFmt="0.00;-0.00";
+   for(let k=1;k<=9;k++){const c=row.getCell(k);c.alignment={horizontal:k===3||k===5?"left":"center"};if(r||k===9)c.border=bd}}
+  const fl=(t,bg,fg,pri)=>({type:"containsText",operator:"containsText",text:t,priority:pri,style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:bg}},font:{color:{argb:fg},bold:true}}});
+  ws.addConditionalFormatting({ref:`D2:D${N}`,rules:[fl("MoneyLine","FFF9CBA8","FF7A3A0E",1),fl("Handicap","FFBFE3AE","FF2B5E1E",2),fl("Over/Under","FFBFE0F7","FF1D4E78",3),fl("Puntos","FF1F5FBF","FFFFFFFF",4),fl("Rebotes","FFDCCBF2","FF4B2A86",5),fl("Asistencias","FF3A3A3A","FFFFFFFF",6)]});
+  ws.addConditionalFormatting({ref:`H2:H${N}`,rules:[fl("Acierto","FFFFFFFF","FF1E8E3E",7),fl("Fallo","FFFFFFFF","FFC62828",8)]});
+  ws.views=[{state:"frozen",ySplit:1}];
+  const buf=await wb.xlsx.writeBuffer(),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download="NBA_"+stamp()+".xlsx";document.body.appendChild(a);a.click();a.remove();$("bm").textContent="Excel descargado.";return
+ }catch(e){console.error(e)}}
+ if(window.XLSX){const ws=XLSX.utils.aoa_to_sheet([HD,...rows]);ws["!cols"]=[12,20,24,14,26,8,8,12,12].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Apuestas");XLSX.writeFile(wb,"NBA_"+stamp()+".xlsx");$("bm").textContent="Excel descargado (sin colores ni listas).";return}
+ const q=x=>{x=String(x).replace(/\./g,",");return /[;"\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x};
+ const csv="\ufeff"+[HD,...rows].map(r=>r.map((x,i)=>typeof x==="number"?q(x):('"'+String(x).replace(/"/g,'""')+'"')).join(";")).join("\r\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="NBA_"+stamp()+".csv";document.body.appendChild(a);a.click();a.remove();$("bm").textContent="Sin conexión a la librería de Excel: bajé un CSV que Excel abre igual."}
+function copyRows(){const rows=sheetData();if(!rows.length){$("bm").textContent="No hay filas para copiar.";return}
+ const t=rows.map(r=>r.slice(0,7).join("\t")).join("\n"),ok=()=>$("bm").textContent=`${rows.length} filas copiadas.`;
+ const fb=()=>{const x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();try{document.execCommand("copy");ok()}catch(e){$("bm").textContent="No pude copiar."}x.remove()};
+ if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,fb);else fb()}
+const modes=(n,fn)=>{const m=new Map();for(let i=0;i<n;i++){const k=fn(i);m.set(k,(m.get(k)||0)+1)}return[...m.entries()].sort((a,b)=>b[1]-a[1])};
+const pc2=c=>(c/50).toFixed(1)+"%";
+function freq(){const A=i=>Math.round((TT[i]-MG[i])/2),H=i=>A(i)+MG[i];
+ const ex=modes(5000,i=>A(i)+"-"+H(i)).slice(0,3),mg=modes(5000,i=>MG[i])[0],bn=modes(5000,i=>Math.floor(A(i)/5)*5+"|"+Math.floor(H(i)/5)*5)[0],[ba,bh]=bn[0].split("|").map(Number);
+ let h=`<div class="rw"><span>Marcador exacto más repetido</span><span class="v">${ex.map(e=>{const[a,b]=e[0].split("-");return `${a}-${b} (${pc2(e[1])})`}).join(" · ")}</span></div>
+ <div class="rw"><span>Rango más frecuente (de 5 pts)</span><span class="v">${T[0].n} ${ba}-${ba+4} · ${T[1].n} ${bh}-${bh+4} (${pc2(bn[1])})</span></div>
+ <div class="rw"><span>Margen más frecuente</span><span class="v">${mg[0]>0?T[1].n+" +"+mg[0]:mg[0]<0?T[0].n+" +"+(-mg[0]):"Empate"} (${pc2(mg[1])})</span></div>
+ <div class="rw"><span>Total de puntos promedio</span><span class="v">${(TT.reduce((a,v)=>a+v,0)/5000).toFixed(1)}</span></div>
+ <h2 style="margin:10px 0 2px">Mejores 3 de cada equipo: valor más frecuente</h2>`;
+ TOP.forEach(x=>{h+=`<div class="rw"><b>${T[x.i].pl[x.j].n}</b><span class="ft">${T[x.i].k}</span></div>`;[0,1,2].forEach(q=>{const arr=SS()[q][x.i][x.j],a=Array.from(arr).sort((u,v)=>u-v),md=modes(5000,i=>arr[i])[0];
+  h+=`<div class="rw"><span>${NM[q]}</span><span class="v">${md[0]} (${pc2(md[1])}) · mediana ${a[2500]} · rango 80%: ${a[500]}-${a[4500]}</span></div>`})});
+ $("fq").innerHTML=h}
+// ---- promedios reales de los 3 mejores ----
+let TG={};try{TG=JSON.parse(localStorage.getItem("nbaStars")||"{}")}catch(e){}
+const saveTG=()=>{try{localStorage.setItem("nbaStars",JSON.stringify(TG))}catch(e){}};
+const skey=(i,j)=>T[i].key+"|"+T[i].pl[j].n;
+function resetT(){T.forEach(t=>t.pl.forEach((p,j)=>{const b=BASE[t.key][j];p.u=b.u;p.rb=b.rb;p.a=b.a}))}
+let SEL={};try{SEL=JSON.parse(localStorage.getItem("nbaSel")||"{}")}catch(e){}
+const saveSel=()=>{T.forEach(t=>{SEL[t.key]=t.stars.map(j=>t.pl[j].n)});try{localStorage.setItem("nbaSel",JSON.stringify(SEL))}catch(e){}};
+const topN=t=>t.pl.map((p,j)=>j).filter(j=>!OUT[t.key+"|"+t.pl[j].n]).sort((a,b)=>t.pl[b].m-t.pl[a].m);
+function pickStars(){T.forEach(t=>{const nm=SEL[t.key];let r=nm?nm.map(n=>t.pl.findIndex(p=>p.n===n)).filter(j=>j>=0):[];if(!nm||(!r.length&&nm.length))r=topN(t).slice(0,3);t.stars=r.slice(0,3)})}
+function drawStars(){$("st3").innerHTML=[0,1].map(i=>{const t=T[i];return `<div class="stc"><div class="sth">${badge(t,28)}<b>${t.n}</b><small>${t.rec}</small></div>`+t.stars.map((j,k)=>{const g=TG[skey(i,j)]||{};
+ const rl=t.pl[j].real,au=f=>rl?{p:rl.pts,r:rl.reb,a:rl.ast}[f]:undefined;
+ const fld=f=>`<input type="number" inputmode="decimal" step=".1" min="0" data-i="${i}" data-j="${j}" data-f="${f}" value="${g[f]??au(f)??""}" data-auto="${au(f)??""}" aria-label="Promedio ${f}">`;
+ const bln=q=>`<input class="bl" type="number" inputmode="decimal" step=".5" min="0" placeholder="línea" data-i="${i}" data-j="${j}" data-q="${q}" value="${BL[skey(i,j)+"|"+q]??""}" aria-label="Línea de la casa ${LB[q]}">`;
+ const opts=t.pl.map((p,q)=>`<option value="${q}"${q===j?" selected":""}${q!==j&&t.stars.includes(q)?" disabled":""}>${p.n}${OUT[okey(i,q)]?" · BAJA":""}</option>`).join("");
+ return `<div class="sr"><div class="srh"><select class="ps" data-i="${i}" data-k="${k}" aria-label="Cambiar jugador">${opts}</select><button class="hv" data-i="${i}" data-j="${j}" title="Historial y matchup" aria-label="Ver historial y matchup">📊</button><button class="x" data-i="${i}" data-k="${k}" title="Quitar jugador" aria-label="Quitar jugador">✕</button></div>
+ <div class="mt"><span></span><span class="h">PTS</span><span class="h">REB</span><span class="h">AST</span>
+ <span class="rl">Prom. 25-26</span>${fld("p")}${fld("r")}${fld("a")}
+ <span class="rl">Modelo</span>${[0,1,2].map(q=>`<span class="mdl" data-i="${i}" data-j="${j}" data-q="${q}">…</span>`).join("")}
+ <span class="rl">Últ. 10</span>${[0,1,2].map(q=>`<span class="hs" id="h_${i}_${j}_${q}"></span>`).join("")}
+ <span class="rl">Línea casa</span>${bln(0)}${bln(1)}${bln(2)}
+ <span class="rl">Resultado</span>${[0,1,2].map(q=>`<span class="rs" id="r_${i}_${j}_${q}"></span>`).join("")}</div><div class="ft adjn" id="adj_${i}_${j}"></div>${rl?`<div class="ft">25-26: ${rl.pts} PTS · ${rl.reb} REB · ${rl.ast} AST · ${rl.mpg} min · ${rl.gp} PJ</div>`:""}</div>`}).join("")+(t.stars.length<3?`<button class="add" data-i="${i}">＋ Agregar jugador</button>`:"")+(t.stars.length?"":`<p class="ft">Sin jugadores elegidos.</p>`)+`</div>`}).join("")}
+// línea justa del modelo, valor más frecuente y evaluación de la línea de la casa
+let BL={};
+function fairStat(arr){const n=arr.length,h=new Uint16Array(70);for(let i=0;i<n;i++)h[Math.min(69,arr[i])]++;
+ let mo=0;for(let v=1;v<70;v++)if(h[v]>h[mo])mo=v;let cum=0,fl=0,bd=9;for(let k=0;k<69;k++){cum+=h[k];const d=Math.abs(1-cum/n-.5);if(d<bd){bd=d;fl=k}}return{l:fl+.5,mo,mp:h[mo]/n}}
+function evalLine(arr,l){let o=0,u=0;for(let i=0;i<arr.length;i++){if(arr[i]>l)o++;else if(arr[i]<l)u++}const t=o+u||1,po=o/t,pu=u/t;return po>=pu?{side:"Más",p:po}:{side:"Menos",p:pu}}
+function readLines(){document.querySelectorAll("#st3 .bl").forEach(e=>{const k=skey(+e.dataset.i,+e.dataset.j)+"|"+e.dataset.q;if(e.value==="")delete BL[k];else BL[k]=parseFloat(e.value)})}
+// ---- historial de partidos (nba_historial.json, generado con nba_historial.py) ----
+let HIST={},HT={};const HK=["2","3","4"],SHR=.85,HN=10;
+function histEntry(i,j){const t=T[i],p=t.pl[j],nm=NZ(p.n),tk=nm.split(" "),ini=tk.length>1&&tk[0].length===1,ab=t.key.toUpperCase();let c;
+ if(!ini&&tk.length>1)c=HIST[nm];else c=Object.values(HIST).filter(x=>x.tm===ab&&x.ln===tk[tk.length-1]&&(!ini||x.nn[0]===tk[0]))[0];
+ return c||null}
+function histFor(i,j){const c=histEntry(i,j);return c&&c.g?c.g:null}
+// ---- ajustes por bajas (con/sin) y descanso ----
+let SPL={},RST={},TRS={};const SHK=6,RSK=10,BK=["b","1","2","2"],BKN=["back-to-back","1 día de descanso","2+ días de descanso","2+ días de descanso"];
+const sg=v=>Math.abs(v)<.05?"0.0":(v>0?"+":"−")+Math.abs(v).toFixed(1);
+function restDelta(i,j,q){const en=histEntry(i,j),rs=en&&RST[en.nn];if(!rs)return 0;const b=rs[BK[CFG.rest[i]]];if(!b)return 0;let n=0,sm=0;for(const k in rs){n+=rs[k][0];sm+=rs[k][0]*rs[k][1+q]}
+ return n?(b[1+q]-sm/n)*b[0]/(b[0]+RSK):0}
+function outDeltas(i,j,q){const t=T[i],en=histEntry(i,j),sp=SPL[t.key.toUpperCase()]||{},r=[];if(!en)return r;
+ t.pl.forEach((p,x)=>{if(x===j||!OUT[t.key+"|"+p.n])return;const ex=histEntry(i,x),e=ex&&sp[ex.nn]&&sp[ex.nn].p[en.nn];if(!e)return;r.push({x:p.n,d:(e[6+q]-e[2+q])*e[1]/(e[1]+SHK),n:e[1]})});return r}
+function adjFor(i,j,q){const od=outDeltas(i,j,q);let d=od.reduce((a,o)=>a+o.d,0)+restDelta(i,j,q)+mDelta(i,j,q);const cap=Math.max(2,.4*(HIST&&(histStat(histFor(i,j)||[],q,-1)||{avg:5}).avg));return Math.max(-cap,Math.min(cap,d))}
+function adjNote(i,j){const t=T[i],p=t.pl[j];if(p.out||!histEntry(i,j))return"";const parts=[];
+ const xs=t.pl.map((o,x)=>x).filter(x=>x!==j&&OUT[t.key+"|"+t.pl[x].n]);
+ xs.forEach(x=>{const ds=[0,1,2].map(q=>outDeltas(i,j,q).find(o=>o.x===t.pl[x].n));if(ds[0])parts.push(`Sin ${t.pl[x].n}: ${[0,1,2].map(q=>sg(ds[q].d)+" "+LB[q]).join(" · ")} (${ds[0].n} partidos sin él)`)});
+ if(RST[histEntry(i,j).nn]&&RST[histEntry(i,j).nn][BK[CFG.rest[i]]]){const r=[0,1,2].map(q=>restDelta(i,j,q));if(r.some(v=>Math.abs(v)>=.2))parts.push(`${BKN[CFG.rest[i]]}: ${r.map((v,q)=>sg(v)+" "+LB[q]).join(" · ")}`)}
+ {const m=[0,1,2].map(q=>mDelta(i,j,q));if(m.some(v=>Math.abs(v)>=.2))parts.push(`Matchup vs ${T[1-i].n}: ${m.map((v,q)=>sg(v)+" "+LB[q]).join(" · ")}`)}return parts.join(" | ")}
+function totShift(){let tot=0;const notes=[];[0,1].forEach(i=>{const t=T[i],ab=t.key.toUpperCase(),sp=SPL[ab]||{};
+ t.pl.forEach((p,x)=>{if(!OUT[t.key+"|"+p.n])return;const ex=histEntry(i,x),e=ex&&sp[ex.nn];if(!e)return;const d=(e.t[1]-e.t[0])*e.n[1]/(e.n[1]+SHK);tot+=d;notes.push(`${t.n} sin ${p.n}: ${sg(d)}`)});
+ const tr=TRS[ab];if(tr){const b=tr[BK[CFG.rest[i]]];let n=0,sm=0;for(const k in tr){n+=tr[k][0];sm+=tr[k][0]*tr[k][1]}if(b&&n){const d=(b[1]-sm/n)*b[0]/(b[0]+RSK);if(Math.abs(d)>=.4){tot+=d;notes.push(`${t.n} ${BKN[CFG.rest[i]]}: ${sg(d)}`)}}}});
+ return{d:Math.max(-14,Math.min(14,tot)),notes}}
+// partidos con peso: recientes pesan mas, los de la temporada pasada pesan menos, se ignoran los de pocos minutos
+function histW(g){const r=g.filter(x=>x[1]>=12).slice(0,HN+4).slice(0,HN);return r.map((x,k)=>({v:x,w:Math.pow(.88,k)*(x[6]?.6:1)}))}
+function histStat(g,q,l,dd){dd=dd||0;const r=histW(g);if(!r.length)return null;let sw=0,sw2=0,so=0,sm=0,n=0,ov=0;
+ r.forEach(({v,w})=>{const x=v[2+q]+dd;sw+=w;sw2+=w*w;sm+=w*x;n++;if(x>l)ov++;so+=w*(x>l?1:x<l?0:.5)});
+ return{avg:sm/sw,po:so/sw,neff:sw*sw/sw2,n,ov}}
+function teamTot(l){const TS=totShift();const g=[0,1].map(i=>{const r=HT[T[i].key.toUpperCase()];return r?r.filter(x=>x[1]+x[2]>0).slice(0,10).map((x,k)=>({t:x[1]+x[2]+TS.d,w:Math.pow(.88,k)*(x[4]?.6:1)})):[]});
+ if(!g[0].length||!g[1].length||isNaN(l))return null;let sw=0,sw2=0,so=0,n=0,ov=0;const av=a=>{let s=0,w=0;a.forEach(x=>{s+=x.t*x.w;w+=x.w});return s/w};
+ g.forEach(a=>a.forEach(x=>{sw+=x.w;sw2+=x.w*x.w;n++;if(x.t>l)ov++;so+=x.w*(x.t>l?1:x.t<l?0:.5)}));return{po:so/sw,neff:sw*sw/sw2,n,ov,a:av(g[0]),b:av(g[1]),sh:TS}}
+function propRows(row){document.querySelectorAll("#st3 .bl").forEach(e=>{const i=+e.dataset.i,j=+e.dataset.j,q=+e.dataset.q,key=skey(i,j)+"|"+q,rs=$("r_"+i+"_"+j+"_"+q),hs=$("h_"+i+"_"+j+"_"+q),l=e.value===""?NaN:parseFloat(e.value);
+ if(!rs)return;const hg=histFor(i,j),ad=hg?adjFor(i,j,q):0,h=hg?histStat(hg,q,isNaN(l)?-1:l,ad):null;
+ if(q===0){const an=$("adj_"+i+"_"+j);if(an)an.textContent=adjNote(i,j)}
+ if(hs)hs.innerHTML=h?`<b>${h.avg.toFixed(1)}</b>${isNaN(l)?"":`<small>${h.ov}/${h.n} más</small>`}${Math.abs(ad)>=.05?`<small class="aj">aj. ${sg(ad)}</small>`:""}`:"<small>—</small>";
+ if(isNaN(l)){delete BL[key];rs.innerHTML="";return}BL[key]=l;if(T[i].pl[j].out){rs.innerHTML="";return}
+ const arr=SS()[q][i][j];let o=0,u=0;for(let k=0;k<arr.length;k++){if(arr[k]>l)o++;else if(arr[k]<l)u++}const pm=o/((o+u)||1);
+ let po=pm,wh=0;if(h){wh=Math.min(.45,h.neff/(h.neff+10));po=(1-wh)*pm+wh*h.po}
+ po=.5+(po-.5)*SHR;const side=po>=.5?"Más":"Menos",p=side==="Más"?po:1-po,n=T[i].pl[j].n;
+ row("",p,.524,"Prop "+NM[q],`${n} ${side.toLowerCase()} de ${l}`,l,null,i,{pl:n,side:`${side} de ${l}`});const x=ROWS[ROWS.length-1];
+ const det=`Modelo ${Math.round((side==="Más"?pm:1-pm)*100)}%`+(h?` · Historial ${Math.round((side==="Más"?h.po:1-h.po)*100)}% (${h.n} partidos, peso ${Math.round(wh*100)}%)`:" · sin historial");
+ rs.title=det;rs.innerHTML=`<b class="${x.c}">${side} ${Math.round(p*100)}%</b><small class="${x.c}">${x.t}</small><small>${h?`mod ${Math.round((side==="Más"?pm:1-pm)*100)} · hist ${Math.round((side==="Más"?h.po:1-h.po)*100)}`:"sin historial"}</small>`})}
+function loadHist(txt,save){const hm=$("hm");let D;
+ try{D=JSON.parse(String(txt).replace(/^\uFEFF/,"").replace(/\b(NaN|-?Infinity)\b/g,"null"))}catch(e){hm.textContent="El historial no es un JSON válido ("+e.message+").";return false}
+ if(!D||!Array.isArray(D.players)||!D.players.length){hm.textContent="El archivo no trae jugadores. ¿Es el nba_historial.json que generó el script?";return false}
+ window.DEFC=null;HIST={};HT=D.teams||{};SPL={};RST={};TRS=D.trest||{};{const N=o=>{const r={};for(const k in o)r[NZ(k)]=o[k];return r};for(const T0 in (D.splits||{})){SPL[T0]={};for(const X in D.splits[T0]){const e=D.splits[T0][X];SPL[T0][NZ(X)]={n:e.n,t:e.t,p:N(e.p)}}}RST=N(D.rest||{})}D.players.forEach(x=>{const nn=NZ(x.n);HIST[nn]={...x,nn,ln:nn.split(" ").pop()}});
+ if(save){try{localStorage.setItem("nbaHist",txt)}catch(e){}}
+ hm.textContent=`Historial (${D.generated||""}): ${D.players.length} jugadores`+(D.teams?` y ${Object.keys(D.teams).length} equipos`:" (sin equipos: volvé a correr nba_historial.py)")+" con sus últimos partidos."+(D.splits?` Datos con/sin jugadores clave: ${Object.values(D.splits).reduce((a,o)=>a+Object.keys(o).length,0)}.`:" Sin datos con/sin: volvé a correr nba_historial.py.");return true}
+function phold(){const av=a=>(a.reduce((s,v)=>s+v,0)/a.length).toFixed(1);
+ document.querySelectorAll("#st3 input[data-f]").forEach(e=>{const i=+e.dataset.i,j=+e.dataset.j,s={p:PA,r:PR,a:PS}[e.dataset.f];e.placeholder="mod "+av(s[i][j])});
+ document.querySelectorAll("#st3 .mdl").forEach(e=>{const f=fairStat(SS()[+e.dataset.q][+e.dataset.i][+e.dataset.j]);e.innerHTML=`<b>${f.l}</b><small>moda ${f.mo} (${Math.round(f.mp*100)}%)</small>`})}
+function calib(){const tg=[];[0,1].forEach(i=>T[i].stars.forEach(j=>{const g=tgt(i,j);if(g.p!=null||g.r!=null||g.a!=null)tg.push([i,j,g])}));
+ if(!tg.length)return 0;
+ for(let it=0;it<12;it++){const N=500,s=tg.map(()=>[0,0,0]);
+  for(let q=0;q<N;q++){const r=sim(false);tg.forEach(([i,j],k)=>{s[k][0]+=r.pts[i][j];s[k][1]+=r.reb[i][j];s[k][2]+=r.ast[i][j]})}
+  tg.forEach(([i,j,g],k)=>{const p=T[i].pl[j],a=s[k].map(x=>x/N),adj=(t,x)=>t>0&&x>0?Math.min(1.6,Math.max(.6,t/x)):1;
+   if(g.p!=null)p.u=Math.min(1.5,p.u*adj(g.p,a[0]));if(g.r!=null)p.rb=Math.min(14,p.rb*adj(g.r,a[1]));if(g.a!=null)p.a=Math.min(14,p.a*adj(g.a,a[2]))})}
+ return tg.length}
+
+// ---- bajas (lesión, descanso, decisión técnica) ----
+let OUT={};
+const okey=(i,j)=>T[i].key+"|"+T[i].pl[j].n;
+function norm(){T.forEach(t=>{const act=t.pl.filter(p=>!p.out),k=240/act.reduce((s,p)=>s+p.m,0);t.pl.forEach(p=>p.mm=p.m*k)})}
+function clearOut(){T.forEach(t=>{t.pl.forEach(p=>p.out=false);t.adj=1})}
+// Los minutos del ausente se reparten entre los demás y el equipo pierde eficiencia según el peso del jugador en el ataque (máx. 20%).
+function applyOut(){let n=0;T.forEach((t,i)=>{let tot=0,miss=0;t.pl.forEach((p,j)=>{const w=BASE[t.key][j].u*p.m;tot+=w;p.out=!!OUT[okey(i,j)];if(p.out){miss+=w;n++}});t.adj=1-Math.min(.2,.18*miss/tot)});return n}
+
+function rebuild(){clearInterval(tmr);resetT();clearOut();norm();const c=calib();const nb=applyOut();norm();$("sm").textContent=(c?`Calibrado: ${c} jugador${c>1?"es":""}`:"")+(nb?`${c?" · ":""}${nb} baja${nb>1?"s":""}`:"");$("mk").innerHTML="";$("sheet").innerHTML="";readLines();drawStars();start()}
+function readInputs(){readLines();document.querySelectorAll("#st3 input[data-f]").forEach(e=>{const k=skey(+e.dataset.i,+e.dataset.j),v=e.value===""||(e.dataset.auto&&parseFloat(e.dataset.auto)===parseFloat(e.value))?null:parseFloat(e.value);TG[k]=TG[k]||{};TG[k][e.dataset.f]=isNaN(v)?null:v});saveTG()}
+const changed=()=>{saveSel();drawStars();rebuild()};
+$("ap").onclick=()=>{readInputs();rebuild()};
+$("rs").onclick=()=>{T.forEach((t,i)=>{t.stars.forEach(j=>delete TG[skey(i,j)]);delete SEL[t.key]});saveTG();pickStars();saveSel();drawStars();rebuild()};
+$("st3").addEventListener("change",e=>{const s=e.target;if(!s.classList.contains("ps"))return;readInputs();T[+s.dataset.i].stars[+s.dataset.k]=+s.value;changed()});
+$("st3").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const i=+b.dataset.i,t=T[i];readInputs();if(b.classList.contains("hv")){openPl(i,+b.dataset.j);return}
+ if(b.classList.contains("x"))t.stars.splice(+b.dataset.k,1);else if(b.classList.contains("add")){if(t.stars.length>=3)return;const n=topN(t).find(j=>!t.stars.includes(j));if(n===undefined)return;t.stars.push(n)}else return;changed()});
+const onOut=e=>{const c=e.target;if(!c.classList.contains("ob"))return;const i=+c.dataset.i,j=+c.dataset.j,k=okey(i,j);
+ if(c.checked){const act=T[i].pl.filter((p,q)=>q!==j&&!OUT[okey(i,q)]).length;if(act<8){c.checked=false;$("sm").textContent="Cada equipo necesita al menos 8 jugadores disponibles.";return}OUT[k]=true;const t=T[i],pos=t.stars.indexOf(j);if(pos>=0){const n=topN(t).find(q=>!t.stars.includes(q));if(n!==undefined)t.stars[pos]=n;else t.stars.splice(pos,1);saveSel()}}else delete OUT[k];rebuild()};
+$("ba").addEventListener("change",onOut);$("bh").addEventListener("change",onOut);
+$("cb").onclick=()=>{T.forEach(t=>{Object.keys(OUT).forEach(k=>{if(k.startsWith(t.key+"|"))delete OUT[k]})});drawStars();rebuild()};
+const OPT=Object.keys(TEAMS).sort((a,b)=>TEAMS[a].n.localeCompare(TEAMS[b].n));
+$("sa").innerHTML=$("sh").innerHTML=OPT.map(k=>`<option value="${k}">${TEAMS[k].n}</option>`).join("");
+function setTeams(a,h){if(a===h)h=OPT.find(k=>k!==a);$("sa").value=a;$("sh").value=h;T=[TEAMS[a],TEAMS[h]];
+ T.forEach(t=>{const k=240/t.pl.reduce((s,p)=>s+p.m,0);t.pl.forEach(p=>p.mm=p.m*k)});CK=a+"-"+h;
+ $("h1").textContent=`${T[0].n} @ ${T[1].n}`;$("an").textContent=T[0].n;$("hn").textContent=T[1].n;$("ar").textContent=T[0].rec+" en 25-26";$("hr").textContent=T[1].rec+" en 25-26";
+ $("ab").innerHTML=badge(T[0],64);$("hb").innerHTML=badge(T[1],64);courtLogo(T[1]);courtImage(T[1]);
+ $("ce").style.background=T[0].c;
+ dg.forEach((g,i)=>g.querySelector("circle").setAttribute("fill",T[i<5?0:1].c));
+ pickStars();drawStars();rebuild()}
+$("sa").onchange=$("sh").onchange=()=>setTeams($("sa").value,$("sh").value);
+// ---- datos reales (nba_datos.json, generado con nba_datos.py) ----
+const NZ=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[.'’]/g,"").replace(/\b(jr|sr|ii|iii|iv)\b/g,"").replace(/\s+/g," ").trim();
+const bl=(v,pr,n,K)=>v==null||!n?pr:(v*n+pr*K)/(n+K);
+function applyData(D){
+ const PL=D.players.map(x=>{const nn=NZ(x.n);return{...x,nn,ln:nn.split(" ").pop()}});window.POSM=window.POSM||{};window.P5=window.P5||function(x){const ps=x.pos,a=x.ast36,r=x.reb36;if(!ps||a==null||r==null)return"";if(ps==="C"||ps==="C-F")return"C";if(ps==="F-C")return"PF";if(ps==="F"){return r>=10?"C":r>=8.5?"PF":(r<4&&a<3.5)?"SG":"SF"}if(ps==="F-G")return"SF";if(ps==="G")return a>=5.5?(r>=8?"SF":"PG"):"SG";if(ps==="G-F")return r>=7.5?"SF":a>=6?"PG":"SG";return""};PL.forEach(x=>{const q=P5(x);if(q)POSM[x.nn]=q});let hit=0,tot=0;const miss=[];
+ for(const k in TEAMS){const t=TEAMS[k],ab=k.toUpperCase(),dd=D.teams&&D.teams[k];
+  if(dd&&dd.d)t.d={rim:dd.d.rim,th:dd.d.th,tv:dd.d.tv};
+  t.pl.forEach(p=>{tot++;const nm=NZ(p.n),tk=nm.split(" "),ini=tk.length>1&&tk[0].length===1;let c;
+   if(tk.length>1&&!ini)c=PL.filter(x=>x.nn===nm);
+   else c=PL.filter(x=>x.tm===ab&&x.ln===tk[tk.length-1]&&(!ini||x.nn[0]===tk[0]));
+   if(c.length>1)c=c.filter(x=>x.tm===ab);
+   if(c.length!==1){miss.push(`${p.n} (${ab})`);return}
+   const x=c[0],r3=v=>+v.toFixed(3),nin=x.n_in||0,nmd=x.n_mid||0,n3=x.n3||0,tt=nin+nmd+n3;
+   if(tt>=60){p.r=r3(bl(nin/tt,p.r,tt,150));p.t=r3(bl(n3/tt,p.t,tt,150))}
+   p.fr=r3(bl(x.fg_in,p.fr,nin,100));p.f3=r3(bl(x.fg3,p.f3,n3,150));p.fm=r3(bl(x.fg_mid,p.fm,nmd,100));
+   p.u=r3(bl(x.usg,p.u,x.mp,400));p.tv=r3(bl(x.tov,p.tv,x.mp,400));
+   p.a=r3(bl(x.ast36==null?null:x.ast36*.23,p.a,x.mp,400));p.rb=r3(bl(x.reb36==null?null:x.reb36*.23,p.rb,x.mp,400));p.real=x.pts==null?undefined:{pts:x.pts,reb:x.reb,ast:x.ast,mpg:x.mpg,gp:x.gp};p.pos=x.pos||p.pos;p.dpm=x.dpm==null?0:Math.max(-.06,Math.min(.06,+(x.dpm*(x.dn||0)/((x.dn||0)+400)).toFixed(4)));hit++})}
+ for(const k in TEAMS)BASE[k]=TEAMS[k].pl.map(p=>({u:p.u,rb:p.rb,a:p.a}));
+ setCl();return{hit,tot,miss}}
+function loadText(txt,save){const dm=$("dm");let D;
+ try{D=JSON.parse(String(txt).replace(/^\uFEFF/,"").replace(/\b(NaN|-?Infinity)\b/g,"null"))}
+ catch(e){dm.textContent=`El archivo no es un JSON válido (${e.message}). Tamaño leído: ${String(txt).length} caracteres. Vuelve a correr nba_datos.py hasta ver "Listo" y carga el archivo nuevo.`;return false}
+ if(!D||!Array.isArray(D.players)||!D.players.length){dm.textContent="El JSON se leyó pero no trae jugadores. ¿Es el nba_datos.json que generó el script?";return false}
+ try{const r=applyData(D);
+  if(save){try{localStorage.setItem("nbaDatos",txt)}catch(e){}}
+  dm.textContent=`Datos reales ${D.season||""} (${D.generated||""}): ${r.hit} de ${r.tot} jugadores actualizados.`+(r.miss.length?` Sin coincidencia (se mantiene la estimación): ${r.miss.slice(0,10).join(", ")}${r.miss.length>10?"…":""}`:"");return true}
+ catch(e){dm.textContent="Error al aplicar los datos: "+e.message;console.error(e);return false}}
+$("dj").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{if(loadText(t,true))setTeams($("sa").value,$("sh").value)})};
+$("hj").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{if(loadHist(t,true)&&$("k1"))calc()})};
+$("dx").onclick=()=>{try{localStorage.removeItem("nbaDatos");localStorage.removeItem("nbaHist")}catch(e){}location.reload()};
+try{const sh=localStorage.getItem("nbaHist");if(sh)loadHist(sh,false)}catch(e){}
+try{const sv=localStorage.getItem("nbaDatos");if(sv)loadText(sv,false)}catch(e){}
+// ---- contexto: local, descanso y emparejamientos ----
+var REST={0:-.02,1:0,2:.006,3:.01},ZE={r:{B:-.025,W:0,G:.02},t:{B:.012,W:-.004,G:-.006},m:{}};
+var CFG={hca:2.5,mu:100,rest:[1,1]};try{Object.assign(CFG,JSON.parse(localStorage.getItem("nbaCtx")||"{}"))}catch(e){}
+function SZ(p){return({B:3,W:2,G:1}[p.cl]||2)+p.rb/20}
+function mEff(dp,z){return dp?CFG.mu/100*((dp.dpm||0)+((ZE[z]||{})[dp.cl]||0)):0}
+function tgt(i,j){const g=TG[skey(i,j)]||{},rl=T[i].pl[j].real||{};return{p:g.p??rl.pts,r:g.r??rl.reb,a:g.a??rl.ast}}
+function setCl(){for(const k in TEAMS)TEAMS[k].pl.forEach((p,i)=>{const b=BASE[k]&&BASE[k][i],rb=b?b.rb:p.rb,ps=p.pos||"";let c;
+ if(!ps)c=(rb>=1.7||p.r>=.6)?"B":rb<1?"G":"W";else if(/C/.test(ps))c="B";else if(ps==="G")c="G";else if(ps==="F")c=rb>=1.7?"B":"W";else c="W";p.cl=c})}
+$("c1").value=CFG.hca;$("c2").value=CFG.mu;$("c3").value=CFG.rest[0];$("c4").value=CFG.rest[1];
+function ctxLabels(){$("c3l").textContent="Descanso · "+T[0].n+" (visitante)";$("c4l").textContent="Descanso · "+T[1].n+" (local)"}
+["c1","c2","c3","c4"].forEach(id=>$(id).onchange=()=>{const n=x=>{const v=parseFloat($(x).value);return isNaN(v)?0:v};CFG={hca:Math.max(0,n("c1")),mu:Math.max(0,n("c2")),rest:[n("c3"),n("c4")]};try{localStorage.setItem("nbaCtx",JSON.stringify(CFG))}catch(e){}rebuild()});
+const _s0=setTeams;setTeams=function(a,h){_s0(a,h);ctxLabels()};
+
+// ---- ficha de jugador: historial de partidos + matchup (estilo prop.cash) ----
+const PM={i:0,j:0,q:0,w:10,l:null},WIN=[[5,"L5"],[10,"L10"],[20,"L20"],[99,"Todos"]],QN=["Puntos","Rebotes","Asistencias"];
+const pmGames=(i,j)=>(histFor(i,j)||[]).filter(x=>x[1]>=12);
+// rival de cada partido: el historial trae fecha, no rival; se deduce cruzando fecha y marcador con la tabla de equipos
+const PG3=s=>["PG","SG","SF","PF","C"].includes(s)?s:"",GN={PG:"bases",SG:"escoltas",SF:"aleros",PF:"ala-pívots",C:"pívots"},GR=["A+","A","A-","B+","B","B-","C+","C","C-","D+","D","F"];
+let DX=null;
+function opOf(tm,x){if(!DX){DX={};for(const t in HT)HT[t].forEach(g=>{(DX[g[0]]=DX[g[0]]||{})[t]=g})}const d=DX[x[0]],g=d&&d[tm];if(!g)return"";const c=Object.keys(d).filter(u=>u!==tm&&d[u][1]===g[2]&&d[u][2]===g[1]);return c.length===1?c[0]:""}
+// cuánto permite cada equipo a cada grupo de posición (1 = el que más permite = mejor para el atacante); partidos de la temporada pasada pesan la mitad
+function defBuild(){DX=null;const A={},L={},PO=window.POSM||{};
+ Object.values(HIST).forEach(h=>{const gp=PG3(PO[h.nn]);if(!gp)return;h.g.forEach(x=>{if(x[1]<12)return;const o=opOf(h.tm,x);if(!o)return;const w=x[6]?.5:1,a=((A[o]=A[o]||{})[gp]=A[o][gp]||[0,0,0,0]),l=(L[gp]=L[gp]||[0,0,0,0]);for(let q=0;q<3;q++){a[q]+=w*x[2+q];l[q]+=w*x[2+q]}a[3]+=w;l[3]+=w})});
+ const R={};["PG","SG","SF","PF","C"].forEach(gp=>{for(let q=0;q<3;q++){const l=L[gp]&&L[gp][q]/L[gp][3];if(!l)continue;
+  const r=Object.keys(A).filter(o=>A[o][gp]).map(o=>{const a=A[o][gp],n=a[3];return{o,n,r:(a[q]/n/l-1)*n/(n+10)}}).sort((a,b)=>b.r-a.r);
+  r.forEach((e,k)=>{const m=R[e.o]=R[e.o]||{};(m[gp]=m[gp]||[])[q]={rk:k+1,of:r.length,r:e.r,n:Math.round(e.n)}})}});return R}
+const grOf=(rk,of)=>GR[Math.min(11,Math.floor((rk-1)/of*12))];
+function mDelta(i,j,q){const en=histEntry(i,j);if(!en)return 0;const gp=PG3((window.POSM||{})[en.nn]||T[i].pl[j].pos);if(!gp)return 0;if(!window.DEFC)window.DEFC=defBuild();
+ const e=((window.DEFC[T[1-i].key.toUpperCase()]||{})[gp]||[])[q];if(!e||e.n<12)return 0;const h=histStat(histFor(i,j)||[],q,-1);return h?h.avg*e.r*.5*CFG.mu/100:0}
+function openPl(i,j){PM.i=i;PM.j=j;PM.l=null;window.DEFC=window.DEFC||defBuild();DEF=window.DEFC;$("pm").hidden=false;pmRender()}
+let DEF={};
+function pmRender(){const {i,j,q,w}=PM,t=T[i],p=t.pl[j],opp=T[1-i],ab=opp.key.toUpperCase(),tm=t.key.toUpperCase(),g=pmGames(i,j),en=histEntry(i,j);
+ const arr=SS()[q][i][j],key=skey(i,j)+"|"+q,l=PM.l!=null?PM.l:(BL[key]!=null?BL[key]:fairStat(arr).l);
+ const hit=n=>{const s=g.slice(0,n===99?999:n);if(!s.length)return null;return{o:s.filter(x=>x[2+q]>l).length,n:s.length}};
+ const sl=g.slice(0,w===99?40:w).reverse(),n=sl.length,avg=n?sl.reduce((a,x)=>a+x[2+q],0)/n:0,H=hit(w);
+ const W=400,Hh=170,base=148,mx=Math.max(l,...sl.map(x=>x[2+q]),1)*1.18,bw=n?Math.min(34,W/n*.72):0;
+ let svg=`<svg viewBox="0 0 ${W} ${Hh}" style="height:auto;margin:6px 0">`;
+ sl.forEach((x,k)=>{const v=x[2+q],h=v/mx*(base-14),cx=(k+.5)*W/n,c=v>l?"var(--g)":v<l?"var(--r)":"#9aa3b5",o=opOf(tm,x);
+  svg+=`<rect x="${cx-bw/2}" y="${base-h}" width="${bw}" height="${h}" rx="3" fill="${c}"${x[6]?' opacity=".55"':""}/><text x="${cx}" y="${base-h-3}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--tx)">${v}</text>`+(n<=20?`<text x="${cx}" y="${base+12}" text-anchor="middle" font-size="8" fill="var(--mt)">${x[5]?"":"@"}${o||""}</text><text x="${cx}" y="${base+22}" text-anchor="middle" font-size="7" fill="var(--mt)">${String(x[0]).slice(5)}</text>`:"")});
+ const ly=base-l/mx*(base-14);svg+=`<line x1="0" x2="${W}" y1="${ly}" y2="${ly}" stroke="var(--tx)" stroke-dasharray="4 3"/><text x="2" y="${ly-3}" font-size="10" font-weight="700">${l}</text></svg>`;
+ const chips=WIN.map(([k,nm])=>{const h=hit(k);return`<button data-w="${k}" class="${k===w?"on":""}">${nm} ${h?`<span class="${h.o/h.n>=.5?"g":"r"}">${Math.round(h.o/h.n*100)}%</span>`:""}</button>`}).join("");
+ const h2=g.filter(x=>opOf(tm,x)===ab),h2h=h2.length?`${h2.filter(x=>x[2+q]>l).length}/${h2.length}`:"—";
+ const pos=window.POSM&&POSM[histEntry(i,j)?histEntry(i,j).nn:NZ(p.n)]||p.pos,gp=PG3(pos),d=DEF[ab]&&DEF[ab][gp]&&DEF[ab][gp][q],gr=d&&d.n>=8?grOf(d.rk,d.of):null;
+ const ks=Object.keys(TEAMS),rk=(f,asc)=>ks.slice().sort((a,b)=>asc?TEAMS[a].d[f]-TEAMS[b].d[f]:TEAMS[b].d[f]-TEAMS[a].d[f]).indexOf(opp.key)+1;
+ const m=AV(q,{i,j}),hs=histStat(g,q,-1),ref=hs?hs.avg:0;
+ const vs=[];Object.values(HIST).forEach(h=>{if(h.nn===(en&&en.nn)||PG3(window.POSM&&POSM[h.nn])!==gp)return;h.g.forEach(x=>{if(x[1]>=12&&opOf(h.tm,x)===ab)vs.push({n:h.n,tm:h.tm,x})})});
+ vs.sort((a,b)=>String(b.x[0]).localeCompare(String(a.x[0])));
+ const vsT=vs.slice(0,10).map(({n,tm,x})=>`<tr><td>${n} <small class="ft">${tm}</small></td><td>${x[0]}</td><td><b>${x[2+q]}</b></td></tr>`).join("");
+ $("pm").firstElementChild.innerHTML=`<div class="pmh"><div><h3>${FN(t,p.n)}</h3><small class="ft">${t.n} ${i?"vs":"@"} ${opp.n}${gp?" · "+gp+" (estimada)":""}</small></div><button class="pmx" aria-label="Cerrar">✕</button></div>
+ <div class="pmt">${QN.map((nm,k)=>`<button data-q="${k}" class="${k===q?"on":""}">${nm}</button>`).join("")}</div>
+ <div class="pmk"><span>Prom. ${WIN.find(x=>x[0]===w)[1]}<b>${n?avg.toFixed(1):"—"}</b></span><span>Hit rate<b>${H?Math.round(H.o/H.n*100)+"% ("+H.o+"/"+H.n+")":"—"}</b></span><span>H2H vs ${ab}<b>${h2h}</b></span><span>Modelo<b>${m.toFixed(1)}</b></span><span>Línea justa<b>${fairStat(arr).l}</b></span></div>
+ <div class="pml">Línea <input id="pml" type="number" step=".5" value="${l}"><button class="hv" id="pmu">Usar en el simulador</button></div>
+ ${n?svg:'<p class="ft">Sin historial para este jugador. Cargá el historial de partidos (nba_historial.json).</p>'}<div class="pmt">${chips}</div>
+ <div class="pmg"><i class="g${gr?gr[0]:"C"}">${gr||"—"}</i><div><b>Matchup vs ${opp.n} · ${QN[q].toLowerCase()}</b><div class="ft" style="margin:0">${d?`${opp.n} es el #${d.rk} de ${d.of} que más ${QN[q].toLowerCase()} permite a ${GN[gp]} (${d.r>0?"+":""}${(d.r*100).toFixed(1)}% vs el promedio de la liga, ${d.n} partidos-jugador). #1 = el más favorable para el atacante.${d.n<8?" Muestra muy chica: sin nota.":d.n<12?" Muestra chica: no se usa para ajustar el prop.":""}`:"No hay datos suficientes de la posición para calificar esta defensa."}</div></div></div>
+ ${gp?`<div class="ft">Otras stats: ${[0,1,2].map(k=>{const e=DEF[ab]&&DEF[ab][gp]&&DEF[ab][gp][k];return e?`${LB[k]} #${e.rk} (${grOf(e.rk,e.of)})`:""}).filter(Boolean).join(" · ")}. Defensa de triples de ${opp.n} #${rk("th",1)} de ${ks.length} (1 = mejor).</div>`:""}
+ <div class="ft">Referencia del modelo: proyecta ${m.toFixed(1)} ${LB[q]} contra ${ref?ref.toFixed(1):"—"} de promedio reciente${ref?` (${m>=ref?"+":""}${((m-ref)/ref*100).toFixed(0)}%)`:""}. No es parte de la nota.</div>
+ ${vs.length?`<h4 style="margin:10px 0 4px">Últimos ${GN[gp]} contra ${opp.n} (${QN[q].toLowerCase()})</h4><table class="pmm">${vsT}</table>`:`<p class="ft">No hay partidos de ${GN[gp]||"su posición"} contra ${opp.n} en el historial.</p>`}`}
+$("pm").addEventListener("click",e=>{const b=e.target.closest("button");if(e.target===$("pm")||(b&&b.classList.contains("pmx"))){$("pm").hidden=true;return}if(!b)return;
+ if(b.dataset.q!=null){PM.q=+b.dataset.q;PM.l=null;pmRender()}else if(b.dataset.w){PM.w=+b.dataset.w;pmRender()}
+ else if(b.id==="pmu"){const v=parseFloat($("pml").value),el=document.querySelector(`#st3 .bl[data-i="${PM.i}"][data-j="${PM.j}"][data-q="${PM.q}"]`);if(el&&!isNaN(v)){el.value=v;$("pm").hidden=true;$("ap").click()}}});
+$("pm").addEventListener("change",e=>{if(e.target.id==="pml"){const v=parseFloat(e.target.value);PM.l=isNaN(v)?null:v;pmRender()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("pm").hidden=true});
+if(typeof fetch==="function"&&/^https?:/.test(location.protocol)){const gt=f=>fetch(f+"?t="+Date.now()).then(r=>r.ok?r.text():Promise.reject());
+ gt("nba_datos.json").then(t=>loadText(t,true)).catch(()=>{}).then(()=>gt("nba_historial.json")).then(t=>{if(loadHist(t,true)){setTeams($("sa").value,$("sh").value)}}).catch(()=>{})}
+setCl();
+setTeams("bos","det");
+</script></body></html>
