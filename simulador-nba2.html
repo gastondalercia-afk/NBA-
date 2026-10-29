@@ -2,28 +2,28 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Simulador NBA posesión por posesión</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:light;--bg:#e8ebf1;--sf:rgba(255,255,255,.72);--sf2:rgba(25,35,70,.09);--tx:#1b2133;--mt:#5b6479;--ln:rgba(25,35,70,.14);--ac:#c4550a;--ac2:#d1346c;--g:#0b8f5a;--r:#cc3a2f;--cl:rgba(120,78,34,.55)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
-body{margin:0;color:var(--tx);font:14px/1.4 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(14px,env(safe-area-inset-top)) 14px 48px;font-variant-numeric:tabular-nums;min-height:100vh;
+body{margin:0;color:var(--tx);font:14px/1.4 "Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(14px,env(safe-area-inset-top)) 14px 48px;font-variant-numeric:tabular-nums;min-height:100vh;
 background:radial-gradient(900px 500px at 85% -10%,rgba(255,150,130,.30),transparent 60%),radial-gradient(800px 500px at -10% 10%,rgba(130,160,255,.30),transparent 60%),radial-gradient(700px 600px at 50% 110%,rgba(255,205,130,.28),transparent 60%),var(--bg);background-attachment:fixed}
 main{max-width:1240px;margin-inline:auto}
 .pick{max-width:560px}.top{display:grid;gap:14px}.top>div{min-width:0}
 @media(min-width:1100px){main{max-width:1560px}.top{grid-template-columns:minmax(300px,.85fr) minmax(0,2.5fr) minmax(300px,.85fr)!important}.rc{display:contents}.rc>.bx:first-child{grid-column:1;grid-row:1;margin:0}.lc{grid-column:2;grid-row:1}.rc>.bx:last-child{grid-column:3;grid-row:1;margin:0}.rc .bx table{font-size:11.5px}.rc .bx td:first-child{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rc .bx th,.rc .bx td{padding:5px 2px}}
 @media(min-width:960px){.top{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start}.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}.cols>.bx{margin-bottom:0}.rc .bx:last-child{margin-bottom:0}}
-h1{font:800 24px/1.05 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.02em;text-transform:uppercase;margin:4px 0 12px;background:linear-gradient(90deg,#1b2133,var(--ac) 60%,var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font:800 24px/1.05 "Big Shoulders Display","Arial Narrow",sans-serif;letter-spacing:.02em;text-transform:uppercase;margin:4px 0 12px;background:linear-gradient(90deg,#1b2133,var(--ac) 60%,var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
 .card,.sc,.wp,.cap,.bx{background:var(--sf);border:1px solid var(--ln);border-radius:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .ctl{display:flex;gap:6px;align-items:center;margin-bottom:12px}
 .ctl>b{color:var(--mt)}
 select{flex:1;min-width:0;padding:10px;border:1px solid var(--ln);border-radius:12px;background:#fbfcfe;color:var(--tx);font:inherit}
 .sc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 8px;background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.55))}
 .tm{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
-.tm b{font:800 46px/1 "Barlow Condensed",sans-serif;margin-top:2px}
+.tm b{font:800 46px/1 "Big Shoulders Display",sans-serif;margin-top:2px}
 .tm i{font-style:normal;font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
 .tm small{color:var(--mt);font-size:11px}
-.cl{text-align:center;font:800 22px/1 "Barlow Condensed",sans-serif;padding:0 6px;color:var(--ac)}
-.cl small{display:block;font:600 11px "Barlow",sans-serif;color:var(--mt);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
+.cl{text-align:center;font:800 22px/1 "Big Shoulders Display",sans-serif;padding:0 6px;color:var(--ac)}
+.cl small{display:block;font:600 11px "Hanken Grotesk",sans-serif;color:var(--mt);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
 .wp{margin:10px 0;padding:10px 12px}
 .wb{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--sf2)}.wb div{transition:width .4s}
 .wl{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:6px}.wl span:nth-child(2){color:var(--mt);font-weight:500}
@@ -62,18 +62,18 @@ svg{display:block;width:100%}
 .fig i{position:absolute;display:block}
 .fig .hd{left:.85cqw;top:0;width:1.7cqw;height:1.7cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f7d9bf,#b9825a 80%);box-shadow:0 .1cqw .3cqw rgba(0,0,0,.35)}
 .fig .bd{left:.4cqw;top:1.6cqw;width:2.6cqw;height:2.7cqw;border-radius:1.1cqw 1.1cqw .5cqw .5cqw;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#000),var(--c) 45%,color-mix(in srgb,var(--c) 65%,#000));border:.14cqw solid rgba(255,255,255,.85);text-align:center;box-shadow:0 .2cqw .5cqw rgba(0,0,0,.3)}
-.fig .bd b{color:#fff;font:800 1.15cqw/2.4cqw "Barlow Condensed",sans-serif;text-shadow:0 0 .3cqw rgba(0,0,0,.6);letter-spacing:.03em}
+.fig .bd b{color:#fff;font:800 1.15cqw/2.4cqw "Big Shoulders Display",sans-serif;text-shadow:0 0 .3cqw rgba(0,0,0,.6);letter-spacing:.03em}
 .fig .lg{left:.8cqw;top:4.2cqw;width:1.8cqw;height:2.1cqw;background:linear-gradient(90deg,transparent 0 8%,#b9825a 8% 44%,transparent 44% 56%,#b9825a 56% 92%,transparent 92%);border-radius:.3cqw}
 .fig .lg::before{content:"";position:absolute;left:0;right:0;top:0;height:.9cqw;background:color-mix(in srgb,var(--c) 55%,#000);border-radius:.3cqw}
 .tgw{position:absolute;left:0;top:0;width:0;height:0;transform:rotateX(-55deg)}
-.ptag{position:absolute;bottom:6.9cqw;left:0;transform:translateX(-50%);display:none;white-space:nowrap;background:rgba(18,22,38,.9);color:#fff;border-left:.5cqw solid var(--c);padding:.35cqw .9cqw;border-radius:.4cqw;font:700 max(9px,1.3cqw)/1.15 "Barlow",sans-serif;box-shadow:0 .3cqw 1cqw rgba(0,0,0,.35)}
+.ptag{position:absolute;bottom:6.9cqw;left:0;transform:translateX(-50%);display:none;white-space:nowrap;background:rgba(18,22,38,.9);color:#fff;border-left:.5cqw solid var(--c);padding:.35cqw .9cqw;border-radius:.4cqw;font:700 max(9px,1.3cqw)/1.15 "Hanken Grotesk",sans-serif;box-shadow:0 .3cqw 1cqw rgba(0,0,0,.35)}
 .pw.act .ptag{display:block}
 .bw{position:absolute;width:0;height:0;transform-style:preserve-3d;left:50%;top:50%}
 .bsh{position:absolute;left:-.8cqw;top:-.4cqw;width:1.6cqw;height:.8cqw;border-radius:50%;background:radial-gradient(closest-side,rgba(10,15,30,.6),transparent)}
 .bsp{position:absolute;left:-.75cqw;top:-.75cqw;width:1.5cqw;height:1.5cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffb366,#e8590c 60%,#a83c06);border:.1cqw solid #5a2306;box-shadow:inset 0 0 0 .05cqw rgba(0,0,0,.4);transform:translateZ(.7cqw) rotateX(-55deg)}
 .bsp::before{content:"";position:absolute;left:50%;top:6%;bottom:6%;width:.1cqw;background:#3a1805;transform:translateX(-50%)}
 .bsp::after{content:"";position:absolute;top:50%;left:6%;right:6%;height:.1cqw;background:#3a1805;transform:translateY(-50%)}
-.bigw{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:italic 900 11cqw/1 "Barlow Condensed",sans-serif;letter-spacing:.04em;color:var(--c,#fff);opacity:0;pointer-events:none;text-shadow:0 .3cqw 1cqw rgba(0,0,0,.25);white-space:nowrap}
+.bigw{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:italic 900 11cqw/1 "Big Shoulders Display",sans-serif;letter-spacing:.04em;color:var(--c,#fff);opacity:0;pointer-events:none;text-shadow:0 .3cqw 1cqw rgba(0,0,0,.25);white-space:nowrap}
 .bigw.go{animation:bigw 1s ease-out}
 @keyframes bigw{0%{opacity:.0;transform:translate(-50%,-50%) scale(.8)}15%{opacity:.5}100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)}}
 .d3 .p3l{display:block}.d3 #dots,.d3 #ball{display:none}.d3 .hoop{opacity:1}
@@ -83,7 +83,7 @@ svg{display:block;width:100%}
 .dot{transition:transform .65s ease}.dot circle{filter:drop-shadow(0 0 1.2px rgba(0,0,0,.6))}.bl{transition:transform .65s ease}
 .cap{display:flex;gap:10px;align-items:center;margin:10px 0;padding:10px 12px;min-height:44px}
 .cap em{width:6px;align-self:stretch;border-radius:4px;flex:none}
-.ctl button{padding:9px 12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:12px;font:600 13px "Barlow",sans-serif;cursor:pointer}
+.ctl button{padding:9px 12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:12px;font:600 13px "Hanken Grotesk",sans-serif;cursor:pointer}
 .ctl button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
 .ctl input[type=range]{flex:1;min-width:0;accent-color:var(--ac)}
 @media(max-width:560px){#cw+.cap+.ctl{flex-wrap:wrap}#cw+.cap+.ctl input[type=range]{order:9;flex:1 1 100%}#cw+.cap+.ctl button{flex:1}}
@@ -93,14 +93,14 @@ th{color:var(--mt);font-weight:500;border-bottom:1px solid var(--ln)}
 tr.on td:first-child{font-weight:700;color:var(--ac)}tr.on td:first-child::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:5px}
 .ob{width:18px;height:18px;accent-color:var(--r);cursor:pointer}.off td:not(:last-child){opacity:.4}.off td:first-child{text-decoration:line-through}
 .bx{padding:10px 12px;margin-bottom:12px}
-.bx h2,.card h2{font:700 16px "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;margin:0 0 6px;color:var(--ac)}
+.bx h2,.card h2{font:700 16px "Big Shoulders Display",sans-serif;letter-spacing:.05em;text-transform:uppercase;margin:0 0 6px;color:var(--ac)}
 .ft{font-size:12px;color:var(--mt)}
 .rw{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--ln)}
 .rw input{width:72px;padding:6px;border:1px solid var(--ln);border-radius:8px;background:#fbfcfe;color:var(--tx);font:inherit;margin-left:4px}
 .v{font-weight:700;text-align:right}.v.g{color:var(--g)}
 /* panel de estrellas */
 details.card{padding:10px 12px;margin-bottom:12px}
-details.card summary{cursor:pointer;font:700 16px "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--ac);list-style:none}
+details.card summary{cursor:pointer;font:700 16px "Big Shoulders Display",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--ac);list-style:none}
 details.card summary::after{content:"▾";float:right;color:var(--mt)}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 @media(max-width:520px){.sg{grid-template-columns:1fr}}
@@ -110,49 +110,93 @@ details.card summary::after{content:"▾";float:right;color:var(--mt)}
 .sn{display:block;font-weight:700;margin-bottom:4px}
 .sr .in{display:flex;gap:6px}
 .sr label{flex:1;font-size:10.5px;color:var(--mt);letter-spacing:.06em}
-.sr input{display:block;width:100%;margin-top:2px;padding:7px 6px;border:1px solid var(--ln);border-radius:9px;background:#fbfcfe;color:var(--tx);font:600 14px "Barlow",sans-serif}
+.sr input{display:block;width:100%;margin-top:2px;padding:7px 6px;border:1px solid var(--ln);border-radius:9px;background:#fbfcfe;color:var(--tx);font:600 14px "Hanken Grotesk",sans-serif}
 .sr input::placeholder{color:rgba(91,100,121,.55)}
 .mt{display:grid;grid-template-columns:64px repeat(3,minmax(0,1fr));gap:6px;align-items:center}
 .mt .h{font-size:10px;color:var(--mt);letter-spacing:.1em;text-align:center;font-weight:700}.mt .rl{font-size:10.5px;color:var(--mt);line-height:1.15}
-.mt input{width:100%;min-width:0;padding:6px 2px;text-align:center;border:1px solid var(--ln);border-radius:8px;background:#fbfcfe;color:var(--tx);font:600 13.5px "Barlow",sans-serif}
+.mt input{width:100%;min-width:0;padding:6px 2px;text-align:center;border:1px solid var(--ln);border-radius:8px;background:#fbfcfe;color:var(--tx);font:600 13.5px "Hanken Grotesk",sans-serif}
 .mt input.bl{border-color:rgba(196,85,10,.45)}
-.mdl{text-align:center;line-height:1.1}.mdl b{display:block;font:800 18px/1 "Barlow Condensed",sans-serif;color:var(--ac)}.mdl small{font-size:10px;color:var(--mt)}
+.mdl{text-align:center;line-height:1.1}.mdl b{display:block;font:800 18px/1 "Big Shoulders Display",sans-serif;color:var(--ac)}.mdl small{font-size:10px;color:var(--mt)}
 .adjn{color:var(--ac);font-weight:600;margin-top:4px}.adjn:empty{display:none}.hs .aj{color:var(--ac)}
-.hs{text-align:center;line-height:1.1;min-height:26px}.hs b{display:block;font:800 15px/1 "Barlow Condensed",sans-serif;color:var(--tx)}.hs small{font-size:10px;color:var(--mt)}
+.hs{text-align:center;line-height:1.1;min-height:26px}.hs b{display:block;font:800 15px/1 "Big Shoulders Display",sans-serif;color:var(--tx)}.hs small{font-size:10px;color:var(--mt)}
 .rs{text-align:center;font-size:11.5px;min-height:30px;line-height:1.15}.rs b,.rs small{display:block}.rs small{font-size:10px;color:var(--mt)}.rs b.g,.rs small.g{color:var(--g)}
 .srh{display:flex;gap:6px;margin-bottom:5px}
 .srh select.ps{flex:1;padding:7px 8px;font-weight:700;font-size:13px}
-.srh .x,.stc .add{border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:10px;cursor:pointer;font:600 13px "Barlow",sans-serif}
+.srh .x,.stc .add{border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:10px;cursor:pointer;font:600 13px "Hanken Grotesk",sans-serif}
 .srh .x{width:34px;color:var(--r)}
 .stc .add{width:100%;padding:8px;margin-top:8px;color:var(--ac);border-style:dashed}
 .sheetbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.sheetbar button{padding:9px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font:600 13px "Barlow",sans-serif;cursor:pointer}
+.sheetbar button{padding:9px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font:600 13px "Hanken Grotesk",sans-serif;cursor:pointer}
 .sheetbar button.go{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
 .tg{width:100%}.tg td,.tg th{padding:6px 4px;text-align:left;vertical-align:top}.tg td:last-child,.tg th:last-child{text-align:right}
-.gt{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--ln);font:800 15px "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--tx)}
-.gt span:last-child{font:600 12px "Barlow",sans-serif;color:var(--mt);letter-spacing:0}
+.gt{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--ln);font:800 15px "Big Shoulders Display",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--tx)}
+.gt span:last-child{font:600 12px "Hanken Grotesk",sans-serif;color:var(--mt);letter-spacing:0}
 .tg{font-size:12.5px}.tg th{font-weight:500;color:var(--mt);font-size:11px;border-bottom:0}.tg td{border-top:1px solid var(--ln)}.tg tr:first-child th{border-top:0}
 .tp td:nth-child(2){white-space:nowrap}.tg td.v{white-space:nowrap;line-height:1.25}.tg td.v b{display:block;font-size:14px}.vt{display:block;font-size:11px;font-weight:600}.stk{color:var(--tx);font-weight:700}.tg td.v:not(.g) .vt{color:var(--mt)}.tp td:nth-child(2){padding-right:8px}
 .pl{display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap}.mk2{color:var(--mt);font-size:12px}
 
 .tg .mk{color:var(--mt);font-size:11px;display:block}
 .sb{display:flex;gap:8px;margin-top:10px;align-items:center}
-.sb button{padding:9px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font:600 13px "Barlow",sans-serif;cursor:pointer}
+.sb button{padding:9px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);font:600 13px "Hanken Grotesk",sans-serif;cursor:pointer}
 .sb button.go{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
 
 .hv{border:1px solid var(--ln);background:var(--sf);border-radius:9px;padding:4px 8px;cursor:pointer;font-size:13px}
 #pm{position:fixed;inset:0;z-index:50;background:rgba(20,24,45,.55);display:flex;align-items:flex-start;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 10px 12px;overflow:auto}
 #pm[hidden]{display:none}
 .pmb{background:#fbfcfe;border:1px solid var(--ln);border-radius:18px;max-width:640px;width:100%;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-.pmh{display:flex;align-items:flex-start;gap:10px;justify-content:space-between}.pmh h3{margin:0;font:800 22px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase}
+.pmh{display:flex;align-items:flex-start;gap:10px;justify-content:space-between}.pmh h3{margin:0;font:800 22px/1.1 "Big Shoulders Display",sans-serif;text-transform:uppercase}
 .pmk{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0;font-size:12px;color:var(--mt)}.pmk b{display:block;color:var(--tx);font-size:16px}
-.pmt{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.pmt button{border:1px solid var(--ln);background:var(--sf);border-radius:999px;padding:5px 11px;font:600 12px "Barlow",sans-serif;cursor:pointer;color:var(--tx)}.pmt button.on{background:var(--tx);color:#fff}
+.pmt{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.pmt button{border:1px solid var(--ln);background:var(--sf);border-radius:999px;padding:5px 11px;font:600 12px "Hanken Grotesk",sans-serif;cursor:pointer;color:var(--tx)}.pmt button.on{background:var(--tx);color:#fff}
 .pmt .g{color:var(--g)}.pmt .r{color:var(--r)}.pmt button.on .g,.pmt button.on .r{color:#fff}
-.pml{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--mt)}.pml input{width:80px;padding:6px;border:1px solid var(--ln);border-radius:9px;font:600 14px "Barlow",sans-serif}
-.pmg{display:flex;align-items:center;gap:10px;margin:10px 0 4px}.pmg i{font:800 34px/1 "Barlow Condensed",sans-serif;font-style:normal;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff}
+.pml{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--mt)}.pml input{width:80px;padding:6px;border:1px solid var(--ln);border-radius:9px;font:600 14px "Hanken Grotesk",sans-serif}
+.pmg{display:flex;align-items:center;gap:10px;margin:10px 0 4px}.pmg i{font:800 34px/1 "Big Shoulders Display",sans-serif;font-style:normal;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff}
 .gA,.gB{background:var(--g)}.gC{background:#c89a1a}.gD,.gF{background:var(--r)}
 .pmm{width:100%;border-collapse:collapse;font-size:12px}.pmm th,.pmm td{padding:4px 6px;text-align:left;border-top:1px solid var(--ln)}
 .pmx{border:0;background:none;font-size:20px;cursor:pointer;color:var(--mt)}
+</style>
+<style id="skin">/* ===== Rediseño: noche de arena, teñida con los colores de los dos equipos ===== */
+:root{color-scheme:dark;--bg:#0a1026;--sf:#111a3e;--sf2:#1a2556;--tx:#eef1ff;--mt:#9aa6da;--ln:#27336b;--ac:#ffc233;--ac2:#ffc233;--g:#46e3a4;--r:#ff6b6b;--cl:rgba(96,54,18,.62);--ta:#16934f;--th:#c8102e;--fd:"Big Shoulders Display","Barlow Condensed","Arial Narrow",sans-serif}
+body{color:var(--tx);background:radial-gradient(900px 640px at -8% -8%,color-mix(in srgb,var(--ta) 42%,transparent),transparent 64%),radial-gradient(900px 640px at 108% -8%,color-mix(in srgb,var(--th) 42%,transparent),transparent 64%),var(--bg);background-attachment:fixed}
+::selection{background:var(--ac);color:#171100}
+h1{font:900 clamp(34px,5.4vw,58px)/.92 var(--fd);letter-spacing:.01em;text-transform:none;color:var(--tx);background:none;-webkit-background-clip:border-box;background-clip:border-box;display:inline-block;margin:6px 0 16px;padding-bottom:9px;border-bottom:5px solid;border-image:linear-gradient(90deg,var(--ta) 50%,var(--th) 50%) 1}
+.card,.sc,.wp,.cap,.bx{background:var(--sf);border:1px solid var(--ln);border-radius:10px;backdrop-filter:none;-webkit-backdrop-filter:none}
+.bx h2,.card h2{font:800 22px/1 var(--fd);letter-spacing:.02em;text-transform:none;color:var(--tx);margin:2px 0 12px;padding:1px 0 1px 11px;border-left:4px solid;border-image:linear-gradient(var(--ta),var(--th)) 1}
+.ft,.ctl>b{color:var(--mt)}
+select,input[type=number],input[type=text],.rw input,.mt input,.sr input,.pml input{background:#0a1230;color:var(--tx);border:1px solid var(--ln);border-radius:7px}
+select option{background:#0a1230;color:var(--tx)}
+input::placeholder{color:#5c68a2}
+input:focus,select:focus,button:focus-visible,summary:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+button{font-family:inherit}
+.ctl button,.sheetbar button,.sb button,.pmt button,.srh .x,.stc .add,.ctl input[type=button]{background:var(--sf2);color:var(--tx);border:1px solid var(--ln);border-radius:7px}
+.ctl button.on,.sheetbar button.go,.sb button.go,.pmt button.on{background:var(--ac);color:#1a1300;border-color:var(--ac);font-weight:800}
+/* marcador: la pieza principal */
+.sc{border-radius:4px;border:1px solid color-mix(in srgb,var(--tx) 16%,transparent);padding:20px 8px 16px;background:linear-gradient(90deg,color-mix(in srgb,var(--ta) 62%,#060a1c) 0,#070b1f 40%,#070b1f 60%,color-mix(in srgb,var(--th) 62%,#060a1c) 100%);box-shadow:inset 0 0 0 4px #070b1f,inset 0 0 0 5px color-mix(in srgb,var(--tx) 10%,transparent)}
+.tm b{font:900 clamp(58px,8vw,92px)/.86 var(--fd);color:var(--ac);text-shadow:0 0 22px rgba(255,194,51,.5),0 2px 0 rgba(0,0,0,.4);letter-spacing:.02em}
+.tm i{font:800 21px/1 var(--fd);letter-spacing:.05em;text-transform:none;color:var(--tx)}
+.tm small{color:color-mix(in srgb,var(--tx) 70%,transparent)}
+.cl{font:800 30px/1 var(--fd);color:var(--ac);text-shadow:0 0 14px rgba(255,194,51,.4)}
+.cl small{font:600 11.5px "Hanken Grotesk",sans-serif;color:var(--mt);text-transform:none;letter-spacing:.02em}
+.wp{padding:10px 12px}.wb{height:12px;border-radius:2px;background:#0a1230}.wb div{border-radius:0}
+.wl span:nth-child(2){color:var(--mt)}
+#court{border:1px solid var(--ln);border-radius:12px;box-shadow:0 22px 50px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04)}
+.cap{color:var(--tx)}
+/* tablas */
+table{border-collapse:collapse}
+th{color:var(--mt);text-transform:none;letter-spacing:0;font-weight:600}
+th,td{border-bottom-color:var(--ln)}
+tr.on td{background:color-mix(in srgb,var(--ac) 9%,transparent)}
+.rw{border-bottom-color:var(--ln)}
+details.card summary{color:var(--tx);font:800 20px/1.1 var(--fd);letter-spacing:.02em}
+.v{font-weight:800}
+.mdl b{font-family:var(--fd);font-weight:800;font-size:26px;color:var(--ac)}
+.mt input,.mt input.bl{background:#0a1230}
+.stc{background:color-mix(in srgb,var(--sf2) 45%,transparent);border-radius:10px}
+.sth small,.sr label,.mt .rl,.mt .h{color:var(--mt)}
+.pmb{background:var(--sf);border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,.65)}
+.pmt button.on{background:var(--ac);color:#1a1300}.pmt button.on .g,.pmt button.on .r{color:#1a1300}
+#v3.on{color:#1a1300}
+.pmm th,.pmm td{border-color:var(--ln)}
+.hs small{display:block}
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script></head><body><main>
 <h1 id="h1"></h1><div class="ctl pick"><select id="sa"></select><b>@</b><select id="sh"></select></div>
 <div class="ctl" style="flex-wrap:wrap;gap:8px"><label style="cursor:pointer;border:1px solid var(--ln);border-radius:8px;padding:7px 11px;background:var(--sf);color:var(--tx);font-weight:600;font-size:13px">Cargar datos reales<input id="dj" type="file" accept=".json,application/json" hidden></label><label style="cursor:pointer;border:1px solid var(--ln);border-radius:8px;padding:7px 11px;background:var(--sf);color:var(--tx);font-weight:600;font-size:13px">Cargar historial de partidos<input id="hj" type="file" accept=".json,application/json" hidden></label><button id="dx" type="button" style="font-size:12px">Volver a estimaciones</button><span class="ft" id="hm">Historial: sin cargar (nba_historial.py).</span><span class="ft" id="dm">Datos: estimaciones del modelo (sin cargar nba_datos.json).</span></div>
@@ -179,7 +223,7 @@ details.card summary::after{content:"▾";float:right;color:var(--mt)}
 <div class="bx"><h2 id="bht"></h2><table id="bh"></table></div>
 </div></div>
 <details class="card" open><summary>Jugadores · promedios, línea del modelo y línea de la casa</summary>
-<p class="ft" style="margin:6px 0 0">Los 6 jugadores que más minutos pueden jugar (3 por equipo; se reemplazan solos si marcás una baja). <b>Prom. 25-26</b>: promedio real de la temporada pasada (se completa con "Cargar datos reales"; podés corregirlo y calibra el modelo). <b>Modelo</b>: línea justa de las 5,000 simulaciones y el valor más frecuente. <b>Últ. 10</b>: promedio de sus últimos partidos (con "Cargar historial de partidos"), ajustado cuando marcás bajas (cómo rinde sin ese compañero) y según el descanso. <b>Línea casa</b>: escribí la de tu casa; la probabilidad mezcla el modelo con cuántas veces el jugador superó esa línea en sus últimos partidos.</p>
+<p class="ft" style="margin:6px 0 0">Los 6 jugadores que más minutos pueden jugar (3 por equipo; se reemplazan solos si marcás una baja). <b>Prom. 26-27</b>: promedio de esta temporada, calculado con el historial de partidos (podés corregirlo y calibra el modelo). <b>Modelo</b>: línea justa de las 5,000 simulaciones y el valor más frecuente. <b>Últ. 10</b>: promedio de sus últimos partidos (con "Cargar historial de partidos"), ajustado cuando marcás bajas (cómo rinde sin ese compañero) y según el descanso. <b>Línea casa</b>: escribí la de tu casa; la probabilidad mezcla el modelo con cuántas veces el jugador superó esa línea en sus últimos partidos.</p>
 <div class="sg" id="st3"></div>
 <div class="sb"><button class="go" id="ap">Aplicar y resimular</button><button id="rs">Restablecer</button><button id="cb">Limpiar bajas</button><span class="ft" id="sm"></span></div></details>
 <div class="cols">
@@ -301,7 +345,7 @@ okc:`<path d="M55 60 L42 75 H50 L45 88 L60 71 H52 Z" fill="${MF}"/>`,
 sas:`<polygon points="50,60 54,70 65,70 56,76 60,87 50,80 40,87 44,76 35,70 46,70" fill="${MF}"/>`};
 Object.assign(MOTIF,NMOT);
 let bid=0;
-function badgeIn(t){const id="bg"+(bid++),d=SH[t.sh];return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.c}"/><stop offset="1" stop-color="${t.c2}"/></linearGradient></defs><path d="${d}" fill="url(#${id})" stroke="rgba(255,255,255,.9)" stroke-width="4" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.6" transform="translate(50 50) scale(.8) translate(-50 -50)"/><text x="50" y="52" text-anchor="middle" font-size="27" font-weight="800" fill="#fff" stroke="rgba(0,0,0,.5)" stroke-width="3" paint-order="stroke" font-family="Barlow Condensed,Arial Narrow,sans-serif" letter-spacing="1">${t.k}</text>${MOTIF[t.key]||""}`}
+function badgeIn(t){const id="bg"+(bid++),d=SH[t.sh];return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.c}"/><stop offset="1" stop-color="${t.c2}"/></linearGradient></defs><path d="${d}" fill="url(#${id})" stroke="rgba(255,255,255,.9)" stroke-width="4" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.6" transform="translate(50 50) scale(.8) translate(-50 -50)"/><text x="50" y="52" text-anchor="middle" font-size="27" font-weight="800" fill="#fff" stroke="rgba(0,0,0,.5)" stroke-width="3" paint-order="stroke" font-family="Big Shoulders Display,Arial Narrow,sans-serif" letter-spacing="1">${t.k}</text>${MOTIF[t.key]||""}`}
 // Logos propios del usuario: poné los archivos en la carpeta "logos" junto a este HTML (bos.png, lal.svg, etc.).
 // Si el archivo no existe, se muestra la insignia genérica.
 const LEXT=["png","svg","webp","jpg"];
@@ -457,15 +501,53 @@ function markets(){const L=LINES[CK]||DL;TOP=[];
  <div id="mr"></div><p class="ft">Umbral de equilibrio: cuota 1.91 (52.4%). Con datos de ejemplo, esto no es consejo de apuestas.</p>`;
  $("mk").querySelectorAll("input").forEach(e=>e.oninput=calc);freq();calc()}
 let ROWS=[],INC=false;
+// ---- historial de equipos contra el spread y el over/under (con la línea que escribas) ----
+function recHtml(sp,tt){if(!Object.keys(HT).length)return"";
+ const ok=v=>!isNaN(v),cell=(a,f)=>{if(!a.length)return"<td>–</td>";let w=0,l=0,pu=0;a.forEach(x=>{const v=f(x);v>0?w++:v<0?l++:pu++});return`<td><b>${w}-${l}${pu?"-"+pu:""}</b></td>`};
+ const row=(i,kind)=>{const r=(HT[T[i].key.toUpperCase()]||[]).filter(x=>x[1]+x[2]>0),si=i?sp:-sp,
+  f=kind?(x=>x[1]-x[2]+si):(x=>x[1]+x[2]-tt),can=kind?ok(sp):ok(tt),ven=r.filter(x=>(x[3]?1:0)===(i?1:0));
+  const lab=kind?`${T[i].n} ${si>0?"+":""}${si} · cubrió`:`${T[i].n} · más de ${tt}`;
+  if(!can)return`<tr><td class="tl">${lab}</td><td colspan="5">–</td></tr>`;
+  return`<tr><td class="tl">${lab}</td>${cell(r.filter(x=>!x[4]),f)}${cell(r.slice(0,5),f)}${cell(r.slice(0,10),f)}${cell(r.slice(0,20),f)}${cell(ven.slice(0,10),f)}</tr>`};
+ return`<h2 style="margin-top:12px">Spread y Over/Under de los equipos</h2><div style="overflow-x:auto"><table class="trc" style="width:100%;border-collapse:collapse;font-size:12.5px;text-align:center"><tr><th style="text-align:left"></th><th>26-27</th><th>L5</th><th>L10</th><th>L20</th><th>${"L10 casa/visita"}</th></tr>${row(0,1)}${row(1,1)}${row(0,0)}${row(1,0)}</table></div><p class="ft" style="margin:4px 0 0">Spread: partidos que cubrió – no cubrió (– empate). Over/Under: partidos con más puntos – menos puntos que la línea (total de ambos equipos). Se aplica la línea que escribiste arriba a los marcadores pasados, porque el historial no trae las líneas reales de cada día. L5/L10/L20 incluyen partidos de la temporada pasada; "casa/visita" cuenta los últimos 10 jugando en la misma condición que hoy.</p><style>.trc td,.trc th{padding:4px 5px;border-bottom:1px solid var(--ln)}.trc td.tl{text-align:left;white-space:nowrap;font-weight:600}</style>`}
+// ---- spread y over/under cuando falta un jugador clave (partidos sin él vs con él) ----
+function outRecHtml(sp,tt){if(!Object.keys(HT).length)return"";const ok=v=>!isNaN(v),rows=[];
+ const rec=(a,f)=>{if(!a.length)return"–";let w=0,l=0,pu=0;a.forEach(x=>{const v=f(x);v>0?w++:v<0?l++:pu++});return`${w}-${l}${pu?"-"+pu:""}`};
+ [0,1].forEach(i=>{const t=T[i],ab=t.key.toUpperCase(),R=(HT[ab]||[]).filter(x=>x[1]+x[2]>0);if(!R.length)return;
+  const ds=new Set(R.map(x=>x[0])),lo=R.reduce((a,x)=>x[0]<a?x[0]:a,"9"),hi=R.reduce((a,x)=>x[0]>a?x[0]:a,""),si=i?sp:-sp;
+  const idx=[...new Set([...t.stars,...t.pl.map((_,j)=>j).filter(j=>OUT[okey(i,j)])])];
+  idx.forEach(j=>{const p=t.pl[j],en=histEntry(i,j),out=!!OUT[okey(i,j)];if(!en)return;
+   const played=en.g.filter(x=>x[1]>0),pd=new Set(played.map(x=>x[0]));
+   if(played.some(x=>x[0]>=lo&&x[0]<=hi&&!ds.has(x[0])))return;
+   const A=R.filter(x=>!pd.has(x[0])),B=R.filter(x=>pd.has(x[0]));if(!A.length&&!out)return;
+   const fs=x=>x[1]-x[2]+si,fo=x=>x[1]+x[2]-tt,mg=a=>a.length?(a.reduce((u,x)=>u+x[1]-x[2],0)/a.length).toFixed(1):"–",
+    e=(SPL[ab]||{})[en.nn],tot=e?`${e.t[0].toFixed(1)} / ${e.t[1].toFixed(1)} <small>(${e.n[1]} sin él)</small>`:"–";
+   rows.push(`<tr><td class="tl">${p.n} <small>${t.n}</small>${out?' <b style="color:var(--r)">BAJA</b>':""}</td><td>${A.length}</td><td><b>${ok(sp)?rec(A,fs):"–"}</b> / ${ok(sp)?rec(B,fs):"–"}</td><td><b>${ok(tt)?rec(A,fo):"–"}</b> / ${ok(tt)?rec(B,fo):"–"}</td><td>${mg(A)} / ${mg(B)}</td><td>${tot}</td></tr>`)})});
+ if(!rows.length)return"";
+ return`<h2 style="margin-top:12px">Cuando falta un jugador clave</h2><div style="overflow-x:auto"><table class="trc" style="width:100%;border-collapse:collapse;font-size:12.5px;text-align:center"><tr><th style="text-align:left">Jugador</th><th>PJ sin él</th><th>Spread<br><small>sin / con</small></th><th>Over<br><small>sin / con</small></th><th>Margen prom.<br><small>sin / con</small></th><th>Total prom.<br><small>con / sin</small></th></tr>${rows.join("")}</table></div><p class="ft" style="margin:4px 0 0">Spread y Over: partidos que cubrió (o pasó la línea) – no, con la línea que escribiste, en los partidos del equipo sin ese jugador / con él. La muestra son los últimos ~15 partidos del equipo, así que son pocos partidos: tomalo como orientación. "Total prom." viene de toda la temporada pasada (con y sin él). Se omiten jugadores que cambiaron de equipo en ese tramo. Al marcar una baja, el modelo también la simula y mueve spread, total y props.</p>`}
+// ---- ajuste del spread y del total por bajas: margen del equipo sin él vs con él (partidos recientes), con encogimiento por muestra chica ----
+const MSK=6;
+function outShift(){const out={m:0,t:0,notes:[],eff:[0,0]};
+ [0,1].forEach(i=>{const t=T[i],ab=t.key.toUpperCase(),R=(HT[ab]||[]).filter(x=>x[1]+x[2]>0);if(!R.length)return;
+  const ds=new Set(R.map(x=>x[0])),lo=R.reduce((a,x)=>x[0]<a?x[0]:a,"9"),hi=R.reduce((a,x)=>x[0]>a?x[0]:a,"");let e=0;
+  t.pl.forEach((p,j)=>{if(!OUT[okey(i,j)])return;const en=histEntry(i,j);if(!en)return;
+   const sE=(SPL[ab]||{})[en.nn];if(sE){const dt=(sE.t[1]-sE.t[0])*sE.n[1]/(sE.n[1]+SHK);out.t+=dt;out.notes.push(`${t.n} sin ${p.n}: total ${sg(dt)}`)}
+   const played=en.g.filter(x=>x[1]>0),pd=new Set(played.map(x=>x[0]));if(played.some(x=>x[0]>=lo&&x[0]<=hi&&!ds.has(x[0])))return;
+   const A=R.filter(x=>!pd.has(x[0])),B=R.filter(x=>pd.has(x[0]));if(!A.length||!B.length)return;
+   const mg=a=>a.reduce((u,x)=>u+x[1]-x[2],0)/a.length,d=(mg(A)-mg(B))*A.length/(A.length+MSK);e+=d;out.notes.push(`${t.n} sin ${p.n}: margen ${sg(d)}`)});
+  e=Math.max(-10,Math.min(10,e));out.eff[i]=e});
+ out.m=out.eff[1]-out.eff[0];out.t=Math.max(-14,Math.min(14,out.t));return out}
 function calc(){const v=id=>parseFloat($(id).value),sp=v("k1"),tt=v("k2"),mh=v("k4"),ma=v("k3");ROWS=[];
  const row=(l,p,be,mk,sel,line,odds,ti,ex)=>{const [t,c]=vd(p,be);ROWS.push({mk,sel,line,p,odds:odds||1.91,ref:!odds,t,c,ti,...ex});return `<div class="rw"><span>${l}</span><span class="v ${c}">${Math.round(p*100)}% · ${t}</span></div>`};
- const cv=cnt(MG,m=>m+sp>0),ov=cnt(TT,x=>x>tt),eh=wH-imp(mh),ea=1-wH-imp(ma);
+ const OS=outShift(),wHx=OS.m?cnt(MG,m=>m+OS.m>0):wH,cv=cnt(MG,m=>m+OS.m+sp>0),ov=cnt(TT,x=>x+OS.t>tt),eh=wHx-imp(mh),ea=1-wHx-imp(ma);
  let h=`<h2 style="margin-top:10px">Modelo</h2>`;
- h+=eh>=ea?row(`Gana ${T[1].n} (cuota ${mh})`,wH,imp(mh),"Moneyline",T[1].n,"",mh,1):row(`Gana ${T[0].n} (cuota ${ma})`,1-wH,imp(ma),"Moneyline",T[0].n,"",ma,0);
+ h+=eh>=ea?row(`Gana ${T[1].n} (cuota ${mh})`,wHx,imp(mh),"Moneyline",T[1].n,"",mh,1):row(`Gana ${T[0].n} (cuota ${ma})`,1-wHx,imp(ma),"Moneyline",T[0].n,"",ma,0);
  h+=cv>=.5?row(`${T[1].n} ${sp>0?"+":""}${sp}`,cv,.524,"Spread",`${T[1].n} ${sp>0?"+":""}${sp}`,sp,null,1):row(`${T[0].n} ${-sp>0?"+":""}${-sp}`,1-cv,.524,"Spread",`${T[0].n} ${-sp>0?"+":""}${-sp}`,-sp,null,0);
  const th=teamTot(tt);let ov2=ov;if(th){const w=Math.min(.35,th.neff/(th.neff+14));ov2=(1-w)*ov+w*th.po}ov2=.5+(ov2-.5)*SHR;
  h+=ov2>=.5?row(`Más de ${tt}`,ov2,.524,"Over/Under",`Más de ${tt}`,tt):row(`Menos de ${tt}`,1-ov2,.524,"Over/Under",`Menos de ${tt}`,tt);
  h+=`<p class="ft" style="margin:4px 0 0">${th?`Totales recientes (puntos de ambos equipos por partido): ${T[0].n} ${th.a.toFixed(0)} · ${T[1].n} ${th.b.toFixed(0)} · ${th.ov} de ${th.n} partidos pasaron de ${tt}. ${th.sh&&th.sh.notes.length?"Ajustes: "+th.sh.notes.join(" · ")+" (total "+sg(th.sh.d)+"). ":""}Para "${ov2>=.5?"más":"menos"}": modelo ${Math.round((ov2>=.5?ov:1-ov)*100)}%, historial ${Math.round((ov2>=.5?th.po:1-th.po)*100)}%.`:"Sin historial de equipos: el total usa solo el modelo (cargá nba_historial.json)."}</p>`;
+ if(OS.m||OS.t)h+=`<p class="ft" style="margin:4px 0 0"><b>Ajuste por bajas</b> (margen y total sin el jugador en los partidos recientes, con la muestra encogida): spread del local ${sg(OS.m)} · total ${sg(OS.t)}. ${OS.notes.join(" · ")}</p>`;
+ h+=recHtml(sp,tt)+outRecHtml(sp,tt);
  $("mr").innerHTML=h;
  propRows(row);
  renderSheet()}
@@ -591,11 +673,11 @@ function drawStars(){$("st3").innerHTML=[0,1].map(i=>{const t=T[i];return `<div 
  const opts=t.pl.map((p,q)=>`<option value="${q}"${q===j?" selected":""}${q!==j&&t.stars.includes(q)?" disabled":""}>${p.n}${OUT[okey(i,q)]?" · BAJA":""}</option>`).join("");
  return `<div class="sr"><div class="srh"><select class="ps" data-i="${i}" data-k="${k}" aria-label="Cambiar jugador">${opts}</select><button class="hv" data-i="${i}" data-j="${j}" title="Historial y matchup" aria-label="Ver historial y matchup">📊</button><button class="x" data-i="${i}" data-k="${k}" title="Quitar jugador" aria-label="Quitar jugador">✕</button></div>
  <div class="mt"><span></span><span class="h">PTS</span><span class="h">REB</span><span class="h">AST</span>
- <span class="rl">Prom. 25-26</span>${fld("p")}${fld("r")}${fld("a")}
+ <span class="rl">Prom. 26-27</span>${fld("p")}${fld("r")}${fld("a")}
  <span class="rl">Modelo</span>${[0,1,2].map(q=>`<span class="mdl" data-i="${i}" data-j="${j}" data-q="${q}">…</span>`).join("")}
  <span class="rl">Últ. 10</span>${[0,1,2].map(q=>`<span class="hs" id="h_${i}_${j}_${q}"></span>`).join("")}
  <span class="rl">Línea casa</span>${bln(0)}${bln(1)}${bln(2)}
- <span class="rl">Resultado</span>${[0,1,2].map(q=>`<span class="rs" id="r_${i}_${j}_${q}"></span>`).join("")}</div><div class="ft adjn" id="adj_${i}_${j}"></div>${rl?`<div class="ft">25-26: ${rl.pts} PTS · ${rl.reb} REB · ${rl.ast} AST · ${rl.mpg} min · ${rl.gp} PJ</div>`:""}</div>`}).join("")+(t.stars.length<3?`<button class="add" data-i="${i}">＋ Agregar jugador</button>`:"")+(t.stars.length?"":`<p class="ft">Sin jugadores elegidos.</p>`)+`</div>`}).join("")}
+ <span class="rl">Resultado</span>${[0,1,2].map(q=>`<span class="rs" id="r_${i}_${j}_${q}"></span>`).join("")}</div><div class="ft adjn" id="adj_${i}_${j}"></div>${rl?`<div class="ft">26-27: ${rl.pts} PTS · ${rl.reb} REB · ${rl.ast} AST · ${rl.mpg} min · ${rl.gp} PJ</div>`:""}</div>`}).join("")+(t.stars.length<3?`<button class="add" data-i="${i}">＋ Agregar jugador</button>`:"")+(t.stars.length?"":`<p class="ft">Sin jugadores elegidos.</p>`)+`</div>`}).join("")}
 // línea justa del modelo, valor más frecuente y evaluación de la línea de la casa
 let BL={};
 function fairStat(arr){const n=arr.length,h=new Uint16Array(70);for(let i=0;i<n;i++)h[Math.min(69,arr[i])]++;
@@ -608,6 +690,18 @@ function histEntry(i,j){const t=T[i],p=t.pl[j],nm=NZ(p.n),tk=nm.split(" "),ini=t
  if(!ini&&tk.length>1)c=HIST[nm];else c=Object.values(HIST).filter(x=>x.tm===ab&&x.ln===tk[tk.length-1]&&(!ini||x.nn[0]===tk[0]))[0];
  return c||null}
 function histFor(i,j){const c=histEntry(i,j);return c&&c.g?c.g:null}
+// ---- temporada 26-27: minutos proyectados y promedios solo con partidos de esta temporada ----
+function histOf(key,p){const nm=NZ(p.n),tk=nm.split(" "),ini=tk.length>1&&tk[0].length===1,ab=key.toUpperCase();let c;
+ if(!ini&&tk.length>1)c=HIST[nm];else c=Object.values(HIST).filter(x=>x.tm===ab&&x.ln===tk[tk.length-1]&&(!ini||x.nn[0]===tk[0]))[0];return c||null}
+// ---- posiciones oficiales: depth charts publicados por la liga (Kalshi, actualizado 28/10/2026), titulares y suplentes ----
+const DCH={"cj mccollum":"PG","rayj dennis":"PG","nickeil alexander-walker":"SG","aaron wiggins":"SG","dyson daniels":"SF","luguentz dort":"SF","jalen johnson":"PF","asa newell":"PF","onyeka okongwu":"C","jock landale":"C","derrick white":"PG","payton pritchard":"PG","mike conley":"PG","paul george":"SG","baylor scheierman":"SG","jordan walsh":"SF","hugo gonzalez":"SF","ron harper":"SF","jayson tatum":"PF","sam hauser":"PF","luka garza":"PF","mitchell robinson":"C","neemias queta":"C","nolan traore":"PG","mikel brown":"PG","egor demin":"SG","keon ellis":"SG","michael porter":"SF","terance mann":"SF","julius randle":"PF","noah clowney":"PF","dayron sharpe":"C","moritz wagner":"C","dennis schroder":"PG","kylan boswell":"PG","sion james":"SG","grayson allen":"SG","brandon miller":"SF","liam mcneeley":"SF","naz reid":"PF","tidjane salaun":"PF","moussa diabate":"C","ryan kalkbrenner":"C","josh giddey":"PG","tre jones":"PG","norman powell":"SG","isaac okoro":"SG","matas buzelis":"SF","leonard miller":"SF","caleb wilson":"PF","noa essengue":"PF","jalen smith":"C","zach collins":"C","james harden":"PG","craig porter":"PG","donovan mitchell":"SG","sam merrill":"SG","peyton watson":"SF","jaylon tyson":"SF","evan mobley":"PF","mario hezonja":"PF","jarrett allen":"C","thomas bryant":"C","kyrie irving":"PG","sergio de larrea":"PG","marcus sasser":"PG","max christie":"SG","naji marshall":"SG","jett howard":"SG","cooper flagg":"SF","zaccharie risacher":"SF","pj washington":"PF","tobi lawal":"PF","daniel gafford":"C","morez johnson":"C","jamal murray":"PG","tyus jones":"PG","ryan nembhard":"PG","christian braun":"SG","cam whitmore":"SG","bryce hopkins":"SF","demar derozan":"SF","spencer jones":"SF","aaron gordon":"PF","zeke nnaji":"PF","nikola jokic":"C","marvin bagley":"C","cade cunningham":"PG","daniss jenkins":"PG","duncan robinson":"SG","isaiah joe":"SG","ausar thompson":"SF","kevin huerter":"SF","john collins":"PF","javonte green":"PF","paul reed":"C","tolu smith":"C","stephen curry":"PG","gary payton":"PG","brandon williams":"PG","brandin podziemski":"SG","deanthony melton":"SG","will richard":"SG","yaxel lendeborg":"SF","georges niang":"SF","gui santos":"PF","malevy leons":"PF","draymond green":"C","charles bassey":"C","fred vanvleet":"PG","bruce thornton":"PG","amen thompson":"SG","reed sheppard":"SG","kevin durant":"SF","bogdan bogdanovic":"SF","jabari smith":"PF","tari eason":"PF","alperen sengun":"C","clint capela":"C","tyrese haliburton":"PG","braden smith":"PG","kelly oubre":"SG","quenton jackson":"SG","aaron nesmith":"SF","jalen slawson":"SF","pascal siakam":"PF","obi toppin":"PF","jay huff":"C","larry nance":"C","darius garland":"PG","jalen pickett":"PG","kris dunn":"SG","keaton wagler":"SG","rui hachimura":"SF","gradey dick":"SF","derrick jones":"PF","jordan miller":"PF","isaiah jackson":"C","brook lopez":"C","luka doncic":"PG","jaden hardy":"PG","austin reaves":"SG","quentin grimes":"SG","ziaire williams":"SF","jake laravia":"SF","matisse thybulle":"PF","sandro mamukelashvili":"PF","jarred vanderbilt":"PF","walker kessler":"C","kevon looney":"C","ty jerome":"PG","scotty pippen":"PG","cedric coward":"SG","cam spencer":"SG","jaylen wells":"SF","jerami grant":"SF","cameron boozer":"PF","isaiah stewart":"PF","zach edey":"C","quinten post":"C","davion mitchell":"PG","dru smith":"PG","tre donaldson":"PG","klay thompson":"SG","tim hardaway":"SG","pelle larsson":"SG","andrew wiggins":"SF","simone fontecchio":"SF","myron gardner":"SF","giannis antetokounmpo":"PF","nikola jovic":"PF","bam adebayo":"C","bobby portis":"C","nick richards":"C","ryan rollins":"PG","kasparas jakucionis":"PG","tyler herro":"SG","brayden burries":"SG","jaime jaquez":"SF","aj green":"SF","kyle kuzma":"PF","ousmane dieng":"PF","myles turner":"C","kelel ware":"C","lamelo ball":"PG","bones hyland":"PG","anthony edwards":"SG","ayo dosunmu":"SG","jaden mcdaniels":"SF","cody williams":"SF","jonathan kuminga":"PF","trey lyles":"PF","rudy gobert":"C","joan beringer":"C","dejounte murray":"PG","jordan poole":"PG","jeremiah fears":"SG","bennedict mathurin":"SG","trey murphy":"SF","herbert jones":"SF","zion williamson":"PF","saddiq bey":"PF","deandre jordan":"C","derik queen":"C","jalen brunson":"PG","jose alvarado":"PG","tyler kolek":"PG","mikal bridges":"SG","miles mcbride":"SG","josh hart":"SF","jordan clarkson":"SF","og anunoby":"PF","landry shamet":"PF","karl-anthony towns":"C","andre drummond":"C","shai gilgeous-alexander":"PG","alex caruso":"PG","jared mccain":"SG","josh dix":"SG","ajay mitchell":"SF","micah peavy":"SF","kenrich williams":"PF","jaylin williams":"PF","isaiah hartenstein":"C","aday mara":"C","jalen suggs":"PG","jevon carter":"PG","jase richardson":"SG","desmond bane":"SF","jamal cain":"SF","franz wagner":"PF","wendell carter":"C","nikola vucevic":"C","tyrese maxey":"PG","anfernee simons":"PG","kentavious caldwell-pope":"SG","jaylen brown":"SF","justin edwards":"SF","lebron james":"PF","jabari walker":"PF","dean wade":"C","adem bona":"C","devin booker":"PG","collin gillespie":"PG","jalen green":"SG","jordan goodwin":"SG","dillon brooks":"SF","luke kennard":"SF","miles bridges":"PF","ryan dunn":"PF","khaman maluach":"C","oso ighodaro":"C","damian lillard":"PG","jrue holiday":"PG","ja morant":"SG","scoot henderson":"SG","toumani camara":"SF","shaedon sharpe":"SF","deni avdija":"PF","vit krejci":"PF","donovan clingan":"C","robert williams":"C","darius acuff":"PG","emanuel sharp":"PG","zach lavine":"SG","daeqwon plowden":"SG","deandre hunter":"SF","nique clifford":"SF","precious achiuwa":"PF","jonathan mogbo":"PF","domantas sabonis":"C","dylan cardwell":"C","deaaron fox":"PG","jordan mclaughlin":"PG","stephon castle":"SG","carter bryant":"SG","dylan harper":"SF","julian champagnie":"SF","devin vassell":"PF","tobias harris":"PF","harrison barnes":"PF","victor wembanyama":"C","luke kornet":"C","immanuel quickley":"PG","jamal shead":"PG","jakobe walter":"SG","rj barrett":"SF","jamison battle":"SF","scottie barnes":"PF","kyle anderson":"PF","jakob poeltl":"C","collin murray-boyles":"C","keyonte george":"PG","isaiah collier":"PG","darryn peterson":"SG","josh green":"SG","ace bailey":"SF","brice sensabaugh":"SF","lauri markkanen":"PF","kyle filipowski":"PF","jaren jackson":"C","jaxson hayes":"C","trae young":"PG","bub carrington":"PG","kyshawn george":"SG","tre johnson":"SG","bilal coulibaly":"SF","justin champagnie":"SF","anthony davis":"PF","anthony gill":"PF","alexandre sarr":"C","deandre ayton":"C","alex sarr":"C"};
+function applyDC(){window.POSM=window.POSM||{};let n=0;for(const k in DCH){if(POSM[k]!==DCH[k])n++;POSM[k]=DCH[k]}window.DEFC=null;return n}
+function applySeason(){applyDC();if(!Object.keys(HIST).length)return;let n=0,tot=0;
+ for(const k in TEAMS)TEAMS[k].pl.forEach(p=>{tot++;if(p.m0==null)p.m0=p.m;const en=histOf(k,p),g=en&&en.g?en.g.filter(x=>!x[6]&&x[1]>0):[];
+  if(!g.length){p.m=p.m0;p.real=undefined;return}
+  const av=f=>g.reduce((a,x)=>a+x[f],0)/g.length,r1=v=>Math.round(v*10)/10;
+  p.m=Math.max(1,r1(av(1)));p.real={pts:r1(av(2)),reb:r1(av(3)),ast:r1(av(4)),mpg:r1(av(1)),gp:g.length};n++});
+ const hm=$("hm");if(hm)hm.textContent+=` Temporada 26-27: minutos proyectados y promedios de ${n} de ${tot} jugadores con sus partidos de esta temporada; el resto conserva los minutos del roster.`}
 // ---- ajustes por bajas (con/sin) y descanso ----
 let SPL={},RST={},TRS={};const SHK=6,RSK=10,BK=["b","1","2","2"],BKN=["back-to-back","1 día de descanso","2+ días de descanso","2+ días de descanso"];
 const sg=v=>Math.abs(v)<.05?"0.0":(v>0?"+":"−")+Math.abs(v).toFixed(1);
@@ -626,7 +720,7 @@ function totShift(){let tot=0;const notes=[];[0,1].forEach(i=>{const t=T[i],ab=t
  const tr=TRS[ab];if(tr){const b=tr[BK[CFG.rest[i]]];let n=0,sm=0;for(const k in tr){n+=tr[k][0];sm+=tr[k][0]*tr[k][1]}if(b&&n){const d=(b[1]-sm/n)*b[0]/(b[0]+RSK);if(Math.abs(d)>=.4){tot+=d;notes.push(`${t.n} ${BKN[CFG.rest[i]]}: ${sg(d)}`)}}}});
  return{d:Math.max(-14,Math.min(14,tot)),notes}}
 // partidos con peso: recientes pesan mas, los de la temporada pasada pesan menos, se ignoran los de pocos minutos
-function histW(g){const r=g.filter(x=>x[1]>=12).slice(0,HN+4).slice(0,HN);return r.map((x,k)=>({v:x,w:Math.pow(.88,k)*(x[6]?.6:1)}))}
+function histW(g){const r=g.filter(x=>x[1]>0).slice(0,HN);return r.map(x=>({v:x,w:1}))}
 function histStat(g,q,l,dd){dd=dd||0;const r=histW(g);if(!r.length)return null;let sw=0,sw2=0,so=0,sm=0,n=0,ov=0;
  r.forEach(({v,w})=>{const x=v[2+q]+dd;sw+=w;sw2+=w*w;sm+=w*x;n++;if(x>l)ov++;so+=w*(x>l?1:x<l?0:.5)});
  return{avg:sm/sw,po:so/sw,neff:sw*sw/sw2,n,ov}}
@@ -634,9 +728,9 @@ function teamTot(l){const TS=totShift();const g=[0,1].map(i=>{const r=HT[T[i].ke
  if(!g[0].length||!g[1].length||isNaN(l))return null;let sw=0,sw2=0,so=0,n=0,ov=0;const av=a=>{let s=0,w=0;a.forEach(x=>{s+=x.t*x.w;w+=x.w});return s/w};
  g.forEach(a=>a.forEach(x=>{sw+=x.w;sw2+=x.w*x.w;n++;if(x.t>l)ov++;so+=x.w*(x.t>l?1:x.t<l?0:.5)}));return{po:so/sw,neff:sw*sw/sw2,n,ov,a:av(g[0]),b:av(g[1]),sh:TS}}
 function propRows(row){document.querySelectorAll("#st3 .bl").forEach(e=>{const i=+e.dataset.i,j=+e.dataset.j,q=+e.dataset.q,key=skey(i,j)+"|"+q,rs=$("r_"+i+"_"+j+"_"+q),hs=$("h_"+i+"_"+j+"_"+q),l=e.value===""?NaN:parseFloat(e.value);
- if(!rs)return;const hg=histFor(i,j),ad=hg?adjFor(i,j,q):0,h=hg?histStat(hg,q,isNaN(l)?-1:l,ad):null;
+ if(!rs)return;const hg=histFor(i,j),ad=hg?adjFor(i,j,q):0,h=hg?histStat(hg,q,isNaN(l)?-1:l,ad):null,hr=hg?histStat(hg,q,isNaN(l)?-1:l,0):null;
  if(q===0){const an=$("adj_"+i+"_"+j);if(an)an.textContent=adjNote(i,j)}
- if(hs)hs.innerHTML=h?`<b>${h.avg.toFixed(1)}</b>${isNaN(l)?"":`<small>${h.ov}/${h.n} más</small>`}${Math.abs(ad)>=.05?`<small class="aj">aj. ${sg(ad)}</small>`:""}`:"<small>—</small>";
+ if(hs)hs.innerHTML=hr?`<b>${hr.avg.toFixed(1)}</b>${isNaN(l)?"":`<small>${hr.ov}/${hr.n} más</small>`}${Math.abs(ad)>=.05?`<small class="aj">aj. ${sg(ad)}</small>`:""}`:"<small>—</small>";
  if(isNaN(l)){delete BL[key];rs.innerHTML="";return}BL[key]=l;if(T[i].pl[j].out){rs.innerHTML="";return}
  const arr=SS()[q][i][j];let o=0,u=0;for(let k=0;k<arr.length;k++){if(arr[k]>l)o++;else if(arr[k]<l)u++}const pm=o/((o+u)||1);
  let po=pm,wh=0;if(h){wh=Math.min(.45,h.neff/(h.neff+10));po=(1-wh)*pm+wh*h.po}
@@ -649,7 +743,7 @@ function loadHist(txt,save){const hm=$("hm");let D;
  if(!D||!Array.isArray(D.players)||!D.players.length){hm.textContent="El archivo no trae jugadores. ¿Es el nba_historial.json que generó el script?";return false}
  window.DEFC=null;HIST={};HT=D.teams||{};SPL={};RST={};TRS=D.trest||{};{const N=o=>{const r={};for(const k in o)r[NZ(k)]=o[k];return r};for(const T0 in (D.splits||{})){SPL[T0]={};for(const X in D.splits[T0]){const e=D.splits[T0][X];SPL[T0][NZ(X)]={n:e.n,t:e.t,p:N(e.p)}}}RST=N(D.rest||{})}D.players.forEach(x=>{const nn=NZ(x.n);HIST[nn]={...x,nn,ln:nn.split(" ").pop()}});
  if(save){try{localStorage.setItem("nbaHist",txt)}catch(e){}}
- hm.textContent=`Historial (${D.generated||""}): ${D.players.length} jugadores`+(D.teams?` y ${Object.keys(D.teams).length} equipos`:" (sin equipos: volvé a correr nba_historial.py)")+" con sus últimos partidos."+(D.splits?` Datos con/sin jugadores clave: ${Object.values(D.splits).reduce((a,o)=>a+Object.keys(o).length,0)}.`:" Sin datos con/sin: volvé a correr nba_historial.py.");return true}
+ hm.textContent=`Historial (${D.generated||""}): ${D.players.length} jugadores`+(D.teams?` y ${Object.keys(D.teams).length} equipos`:" (sin equipos: volvé a correr nba_historial.py)")+" con sus últimos partidos."+(D.splits?` Datos con/sin jugadores clave: ${Object.values(D.splits).reduce((a,o)=>a+Object.keys(o).length,0)}.`:" Sin datos con/sin: volvé a correr nba_historial.py.");applySeason();return true}
 function phold(){const av=a=>(a.reduce((s,v)=>s+v,0)/a.length).toFixed(1);
  document.querySelectorAll("#st3 input[data-f]").forEach(e=>{const i=+e.dataset.i,j=+e.dataset.j,s={p:PA,r:PR,a:PS}[e.dataset.f];e.placeholder="mod "+av(s[i][j])});
  document.querySelectorAll("#st3 .mdl").forEach(e=>{const f=fairStat(SS()[+e.dataset.q][+e.dataset.i][+e.dataset.j]);e.innerHTML=`<b>${f.l}</b><small>moda ${f.mo} (${Math.round(f.mp*100)}%)</small>`})}
@@ -707,9 +801,9 @@ function applyData(D){
    if(tt>=60){p.r=r3(bl(nin/tt,p.r,tt,150));p.t=r3(bl(n3/tt,p.t,tt,150))}
    p.fr=r3(bl(x.fg_in,p.fr,nin,100));p.f3=r3(bl(x.fg3,p.f3,n3,150));p.fm=r3(bl(x.fg_mid,p.fm,nmd,100));
    p.u=r3(bl(x.usg,p.u,x.mp,400));p.tv=r3(bl(x.tov,p.tv,x.mp,400));
-   p.a=r3(bl(x.ast36==null?null:x.ast36*.23,p.a,x.mp,400));p.rb=r3(bl(x.reb36==null?null:x.reb36*.23,p.rb,x.mp,400));p.real=x.pts==null?undefined:{pts:x.pts,reb:x.reb,ast:x.ast,mpg:x.mpg,gp:x.gp};p.pos=x.pos||p.pos;p.dpm=x.dpm==null?0:Math.max(-.06,Math.min(.06,+(x.dpm*(x.dn||0)/((x.dn||0)+400)).toFixed(4)));hit++})}
+   p.a=r3(bl(x.ast36==null?null:x.ast36*.23,p.a,x.mp,400));p.rb=r3(bl(x.reb36==null?null:x.reb36*.23,p.rb,x.mp,400));p.real=undefined;p.pos=x.pos||p.pos;p.dpm=x.dpm==null?0:Math.max(-.06,Math.min(.06,+(x.dpm*(x.dn||0)/((x.dn||0)+400)).toFixed(4)));hit++})}
  for(const k in TEAMS)BASE[k]=TEAMS[k].pl.map(p=>({u:p.u,rb:p.rb,a:p.a}));
- setCl();return{hit,tot,miss}}
+ setCl();applySeason();return{hit,tot,miss}}
 function loadText(txt,save){const dm=$("dm");let D;
  try{D=JSON.parse(String(txt).replace(/^\uFEFF/,"").replace(/\b(NaN|-?Infinity)\b/g,"null"))}
  catch(e){dm.textContent=`El archivo no es un JSON válido (${e.message}). Tamaño leído: ${String(txt).length} caracteres. Vuelve a correr nba_datos.py hasta ver "Listo" y carga el archivo nuevo.`;return false}
@@ -719,7 +813,7 @@ function loadText(txt,save){const dm=$("dm");let D;
   dm.textContent=`Datos reales ${D.season||""} (${D.generated||""}): ${r.hit} de ${r.tot} jugadores actualizados.`+(r.miss.length?` Sin coincidencia (se mantiene la estimación): ${r.miss.slice(0,10).join(", ")}${r.miss.length>10?"…":""}`:"");return true}
  catch(e){dm.textContent="Error al aplicar los datos: "+e.message;console.error(e);return false}}
 $("dj").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{if(loadText(t,true))setTeams($("sa").value,$("sh").value)})};
-$("hj").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{if(loadHist(t,true)&&$("k1"))calc()})};
+$("hj").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{if(loadHist(t,true))setTeams($("sa").value,$("sh").value)})};
 $("dx").onclick=()=>{try{localStorage.removeItem("nbaDatos");localStorage.removeItem("nbaHist")}catch(e){}location.reload()};
 try{const sh=localStorage.getItem("nbaHist");if(sh)loadHist(sh,false)}catch(e){}
 try{const sv=localStorage.getItem("nbaDatos");if(sv)loadText(sv,false)}catch(e){}
@@ -738,20 +832,20 @@ const _s0=setTeams;setTeams=function(a,h){_s0(a,h);ctxLabels()};
 
 // ---- ficha de jugador: historial de partidos + matchup (estilo prop.cash) ----
 const PM={i:0,j:0,q:0,w:10,l:null},WIN=[[5,"L5"],[10,"L10"],[20,"L20"],[99,"Todos"]],QN=["Puntos","Rebotes","Asistencias"];
-const pmGames=(i,j)=>(histFor(i,j)||[]).filter(x=>x[1]>=12);
+const pmGames=(i,j)=>(histFor(i,j)||[]).filter(x=>x[1]>0);
 // rival de cada partido: el historial trae fecha, no rival; se deduce cruzando fecha y marcador con la tabla de equipos
 const PG3=s=>["PG","SG","SF","PF","C"].includes(s)?s:"",GN={PG:"bases",SG:"escoltas",SF:"aleros",PF:"ala-pívots",C:"pívots"},GR=["A+","A","A-","B+","B","B-","C+","C","C-","D+","D","F"];
 let DX=null;
 function opOf(tm,x){if(!DX){DX={};for(const t in HT)HT[t].forEach(g=>{(DX[g[0]]=DX[g[0]]||{})[t]=g})}const d=DX[x[0]],g=d&&d[tm];if(!g)return"";const c=Object.keys(d).filter(u=>u!==tm&&d[u][1]===g[2]&&d[u][2]===g[1]);return c.length===1?c[0]:""}
-// cuánto permite cada equipo a cada grupo de posición (1 = el que más permite = mejor para el atacante); partidos de la temporada pasada pesan la mitad
+// cuánto permite cada equipo a cada grupo de posición (1 = el que más permite = mejor para el atacante); solo partidos de esta temporada (26-27)
 function defBuild(){DX=null;const A={},L={},PO=window.POSM||{};
- Object.values(HIST).forEach(h=>{const gp=PG3(PO[h.nn]);if(!gp)return;h.g.forEach(x=>{if(x[1]<12)return;const o=opOf(h.tm,x);if(!o)return;const w=x[6]?.5:1,a=((A[o]=A[o]||{})[gp]=A[o][gp]||[0,0,0,0]),l=(L[gp]=L[gp]||[0,0,0,0]);for(let q=0;q<3;q++){a[q]+=w*x[2+q];l[q]+=w*x[2+q]}a[3]+=w;l[3]+=w})});
+ Object.values(HIST).forEach(h=>{const gp=PG3(PO[h.nn]);if(!gp)return;h.g.forEach(x=>{if(x[1]<12||x[6])return;const o=opOf(h.tm,x);if(!o)return;const w=1,a=((A[o]=A[o]||{})[gp]=A[o][gp]||[0,0,0,0]),l=(L[gp]=L[gp]||[0,0,0,0]);for(let q=0;q<3;q++){a[q]+=w*x[2+q];l[q]+=w*x[2+q]}a[3]+=w;l[3]+=w})});
  const R={};["PG","SG","SF","PF","C"].forEach(gp=>{for(let q=0;q<3;q++){const l=L[gp]&&L[gp][q]/L[gp][3];if(!l)continue;
   const r=Object.keys(A).filter(o=>A[o][gp]).map(o=>{const a=A[o][gp],n=a[3];return{o,n,r:(a[q]/n/l-1)*n/(n+10)}}).sort((a,b)=>b.r-a.r);
   r.forEach((e,k)=>{const m=R[e.o]=R[e.o]||{};(m[gp]=m[gp]||[])[q]={rk:k+1,of:r.length,r:e.r,n:Math.round(e.n)}})}});return R}
 const grOf=(rk,of)=>GR[Math.min(11,Math.floor((rk-1)/of*12))];
 function mDelta(i,j,q){const en=histEntry(i,j);if(!en)return 0;const gp=PG3((window.POSM||{})[en.nn]||T[i].pl[j].pos);if(!gp)return 0;if(!window.DEFC)window.DEFC=defBuild();
- const e=((window.DEFC[T[1-i].key.toUpperCase()]||{})[gp]||[])[q];if(!e||e.n<12)return 0;const h=histStat(histFor(i,j)||[],q,-1);return h?h.avg*e.r*.5*CFG.mu/100:0}
+ const e=((window.DEFC[T[1-i].key.toUpperCase()]||{})[gp]||[])[q];if(!e||e.n<4)return 0;const h=histStat(histFor(i,j)||[],q,-1);return h?h.avg*e.r*.5*CFG.mu/100:0}
 function openPl(i,j){PM.i=i;PM.j=j;PM.l=null;window.DEFC=window.DEFC||defBuild();DEF=window.DEFC;$("pm").hidden=false;pmRender()}
 let DEF={};
 function pmRender(){const {i,j,q,w}=PM,t=T[i],p=t.pl[j],opp=T[1-i],ab=opp.key.toUpperCase(),tm=t.key.toUpperCase(),g=pmGames(i,j),en=histEntry(i,j);
@@ -765,10 +859,10 @@ function pmRender(){const {i,j,q,w}=PM,t=T[i],p=t.pl[j],opp=T[1-i],ab=opp.key.to
  const ly=base-l/mx*(base-14);svg+=`<line x1="0" x2="${W}" y1="${ly}" y2="${ly}" stroke="var(--tx)" stroke-dasharray="4 3"/><text x="2" y="${ly-3}" font-size="10" font-weight="700">${l}</text></svg>`;
  const chips=WIN.map(([k,nm])=>{const h=hit(k);return`<button data-w="${k}" class="${k===w?"on":""}">${nm} ${h?`<span class="${h.o/h.n>=.5?"g":"r"}">${Math.round(h.o/h.n*100)}%</span>`:""}</button>`}).join("");
  const h2=g.filter(x=>opOf(tm,x)===ab),h2h=h2.length?`${h2.filter(x=>x[2+q]>l).length}/${h2.length}`:"—";
- const pos=window.POSM&&POSM[histEntry(i,j)?histEntry(i,j).nn:NZ(p.n)]||p.pos,gp=PG3(pos),d=DEF[ab]&&DEF[ab][gp]&&DEF[ab][gp][q],gr=d&&d.n>=8?grOf(d.rk,d.of):null;
+ const pos=window.POSM&&POSM[histEntry(i,j)?histEntry(i,j).nn:NZ(p.n)]||p.pos,gp=PG3(pos),d=DEF[ab]&&DEF[ab][gp]&&DEF[ab][gp][q],gr=d&&d.n>=3?grOf(d.rk,d.of):null;
  const ks=Object.keys(TEAMS),rk=(f,asc)=>ks.slice().sort((a,b)=>asc?TEAMS[a].d[f]-TEAMS[b].d[f]:TEAMS[b].d[f]-TEAMS[a].d[f]).indexOf(opp.key)+1;
  const m=AV(q,{i,j}),hs=histStat(g,q,-1),ref=hs?hs.avg:0;
- const vs=[];Object.values(HIST).forEach(h=>{if(h.nn===(en&&en.nn)||PG3(window.POSM&&POSM[h.nn])!==gp)return;h.g.forEach(x=>{if(x[1]>=12&&opOf(h.tm,x)===ab)vs.push({n:h.n,tm:h.tm,x})})});
+ const vs=[];Object.values(HIST).forEach(h=>{if(h.nn===(en&&en.nn)||PG3(window.POSM&&POSM[h.nn])!==gp)return;h.g.forEach(x=>{if(x[1]>0&&opOf(h.tm,x)===ab)vs.push({n:h.n,tm:h.tm,x})})});
  vs.sort((a,b)=>String(b.x[0]).localeCompare(String(a.x[0])));
  const vsT=vs.slice(0,10).map(({n,tm,x})=>`<tr><td>${n} <small class="ft">${tm}</small></td><td>${x[0]}</td><td><b>${x[2+q]}</b></td></tr>`).join("");
  $("pm").firstElementChild.innerHTML=`<div class="pmh"><div><h3>${FN(t,p.n)}</h3><small class="ft">${t.n} ${i?"vs":"@"} ${opp.n}${gp?" · "+gp+" (estimada)":""}</small></div><button class="pmx" aria-label="Cerrar">✕</button></div>
@@ -788,5 +882,6 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")$("pm").hidden=true}
 if(typeof fetch==="function"&&/^https?:/.test(location.protocol)){const gt=f=>fetch(f+"?t="+Date.now()).then(r=>r.ok?r.text():Promise.reject());
  gt("nba_datos.json").then(t=>loadText(t,true)).catch(()=>{}).then(()=>gt("nba_historial.json")).then(t=>{if(loadHist(t,true)){setTeams($("sa").value,$("sh").value)}}).catch(()=>{})}
 setCl();
+const _s9=setTeams;setTeams=function(a,h){_s9(a,h);const r=document.documentElement.style;r.setProperty("--ta",T[0].c);r.setProperty("--th",T[1].c)};
 setTeams("bos","det");
 </script></body></html>
