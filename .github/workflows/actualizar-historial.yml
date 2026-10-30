@@ -1,0 +1,43 @@
+name: Actualizar historial NBA
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install nba_api pandas
+      - name: Generar historial en una carpeta aparte
+        run: |
+          mkdir -p salida
+          cd salida
+          python ../nba_historial.py
+      - name: Validar antes de reemplazar
+        run: |
+          python - <<'PY'
+          import json, sys
+          d = json.load(open("salida/nba_historial.json", encoding="utf-8"))
+          ok = len(d["players"]) >= 400 and len(d["teams"]) == 30
+          print("jugadores:", len(d["players"]), "| equipos:", len(d["teams"]), "| generado:", d["generated"])
+          if not ok:
+              sys.exit("Datos incompletos. No se reemplaza el archivo.")
+          PY
+      - name: Guardar el JSON nuevo
+        run: |
+          cp salida/nba_historial.json nba_historial.json
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add nba_historial.json
+          git diff --cached --quiet || git commit -m "Historial actualizado $(date +%F)"
+          git push
